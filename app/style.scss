@@ -3,3 +3,17 @@
 .content {
   padding: $unit;
 }
+
+.navigationButtons {
+  flex-grow: 1;
+  text-align: right;
+}
+
+.appBarLink {
+  padding: $unit;
+}
+
+.loginButton {
+  flex-grow: 1;
+
+}

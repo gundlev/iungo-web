@@ -4,7 +4,7 @@ import Rebase from 're-base'
 import {URL} from '../../config/firebase'
 let base = Rebase.createClass(URL)
 
-const USER_ID = '00591a2d-49a1-4a6c-a569-4dad284b8f23'
+const USER_ID = 'e2ac2896-0d74-4720-9b4a-25da4a251ff4'
 
 import {Tab, Tabs, Card, ProgressBar} from 'react-toolbox';
 
@@ -59,7 +59,7 @@ class GroupCard extends Component{
     })
   }
 
-  getCardDescription = ({meetings, members}) => `Meetings: ${Object.keys(meetings).length}  |  Members: ${Object.keys(members).length}`
+  getCardDescription = ({meetings = {}, members = {}}) => `Meetings: ${Object.keys(meetings).length}  |  Members: ${Object.keys(members).length}`
 
   render(){ return this.state.group
     ? <Card
