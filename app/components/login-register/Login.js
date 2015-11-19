@@ -3,7 +3,7 @@ import firebaseUtils from '../../utils/firebaseUtils'
 import {Button, Input} from 'react-toolbox'
 import Style from '../../style.scss'
 
-module.exports = class Login extends React.Component{
+class Login extends React.Component{
   constructor(props){
     super(props)
     this.state = {
@@ -44,8 +44,8 @@ module.exports = class Login extends React.Component{
       <div className="col-sm-6 col-sm-offset-3">
         <form onSubmit={this.handleSubmit}>
           <Input name="email" type='text' label='Email' value={this.state.email} onChange={this.handleChange.bind(this, 'email')}  required/>
-          <Input name="password" type='text' label='Password' value={this.state.pw} onChange={this.handleChange.bind(this, 'password')}  required/>
-          <Button className={Style.loginButton} label='Login' raised />
+          <Input name="password" type='password' label='Password' value={this.state.pw} onChange={this.handleChange.bind(this, 'password')}  required/>
+          <Button className={Style.loginButton} label='Login' raised primary />
           {errors}
         </form>
       </div>
@@ -53,17 +53,4 @@ module.exports = class Login extends React.Component{
   }
 }
 
-// <div className="col-sm-6 col-sm-offset-3">
-//   <form onSubmit={this.handleSubmit}>
-//     <div className="form-group">
-//       <label> Email </label>
-//       <input className="form-control" ref="email" placeholder="Email"/>
-//     </div>
-//     <div className="form-group">
-//       <label>Password</label>
-//       <input ref="pw" type="password" className="form-control" placeholder="Password" />
-//     </div>
-//     <Button className={Style.loginButton} type="submit" label='Login' raised />
-//     {errors}
-//   </form>
-// </div>
+export default Login

@@ -8,7 +8,7 @@ class Main extends React.Component{
   constructor(props){
     super(props)
     this.state = {
-      loggedIn: firebaseUtils.isLoggedIn()
+      auth: firebaseUtils.loggedInUser()
     }
 
     firebaseUtils.onChange = (loggedIn) => this.handleLogout(loggedIn);
@@ -16,13 +16,13 @@ class Main extends React.Component{
 
   handleLogout(loggedIn){
     this.setState({
-      loggedIn: loggedIn
+      auth: loggedIn
     });
   }
 
   render(){
     var links = []
-    if (this.state.loggedIn) {
+    if (this.state.auth) {
       links = [
         {href: "/", label: "Home"},
         {href: "/dashboard", label: "Dashboard"},
@@ -47,33 +47,14 @@ class Main extends React.Component{
 
         <div style={{padding: '30px'}}>
           <div>
-             {this.props.children}
+            {React.cloneElement(this.props.children, {
+             uid: this.state.auth ? this.state.auth.uid : null
+           })}
           </div>
         </div>
       </span>
     )
   }
 }
-
-// <nav className="navbar navbar-default navbar-static-top">
-//   <div className="container">
-//     <div className="navbar-header">
-//       <Link to="/" className="navbar-brand"> IUNGO </Link>
-//     </div>
-//     <ul className="nav navbar-nav pull-right">
-//       <li><Link to="/" className="navbar-brand"> Home </Link></li>
-//       <li><Link to="/dashboard" className="navbar-brand"> Dashboard </Link></li>
-//       {
-//         !this.state.loggedIn
-//         && (<li><Link to="/register" className="navbar-brand"> Register </Link></li>)
-//       }
-//       {
-//         this.state.loggedIn
-//         ? (<li><Link to="/logout" className="navbar-brand">Logout</Link></li>)
-//         : (<li><Link to="/login" className="navbar-brand">Login</Link></li>)
-//       }
-//     </ul>
-//   </div>
-// </nav>
 
 export default Main;

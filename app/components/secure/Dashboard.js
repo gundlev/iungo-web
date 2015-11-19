@@ -4,8 +4,6 @@ import Rebase from 're-base'
 import {URL} from '../../config/firebase'
 let base = Rebase.createClass(URL)
 
-const USER_ID = 'e2ac2896-0d74-4720-9b4a-25da4a251ff4'
-
 import {Tab, Tabs, Card, ProgressBar} from 'react-toolbox';
 
 const STATUS = {
@@ -14,19 +12,31 @@ const STATUS = {
   invitered : 'invited'
 }
 
-module.exports = class Dashboard extends Component{
+let refs = []
+
+function listenTo(path, options){
+  let ref = base.listenTo(path, options)
+  refs.push(ref)
+  return ref
+}
+
+class Dashboard extends Component{
   constructor(props){
     super(props)
+    console.log(props)
     this.state = {
-      groups: null
+      groups: null,
+      activeTab: 0
     }
+  }
 
-    base.listenTo(`users/${USER_ID}/ngroup`, {
+  componentDidMount(){
+    listenTo(`users/${this.props.uid}/ngroup`, {
     context: this,
     then(groupRefs){
       Object.keys(groupRefs).forEach(key =>{
         let ref = groupRefs[key];
-        base.listenTo(ref, {
+        listenTo(ref, {
           context: this,
           then(status){
             let groups = Object.assign({}, this.state.groups);
@@ -39,8 +49,17 @@ module.exports = class Dashboard extends Component{
     })
   }
 
+  componentWillUnmount(){
+    refs.forEach(ref => base.removeBinding(ref))
+    refs = []
+  }
+
+  handleTabChange = (activeTab) => {
+    this.setState({activeTab})
+  }
+
   render(){
-    return <GroupViews groups={this.state.groups}/>
+    return <GroupViews handleTabChange={this.handleTabChange} activeTab={this.state.activeTab} groups={this.state.groups}/>
   }
 
 }
@@ -51,7 +70,7 @@ class GroupCard extends Component{
     this.state = {
       group: null
     }
-    base.listenTo(`networkgroups/${props.id}`, {
+    listenTo(`networkgroups/${props.id}`, {
       context: this,
       then(group){
         this.setState({group})
@@ -59,7 +78,7 @@ class GroupCard extends Component{
     })
   }
 
-  getCardDescription = ({meetings = {}, members = {}}) => `Meetings: ${Object.keys(meetings).length}  |  Members: ${Object.keys(members).length}`
+  getCardDescription = ({meetings={}, members={}}) => `Meetings: ${Object.keys(meetings).length}  |  Members: ${Object.keys(members).length}`
 
   render(){ return this.state.group
     ? <Card
@@ -74,7 +93,7 @@ class GroupCard extends Component{
 
 let EmptyGroupCard = ({type}) => <div> no {type} groups</div>
 
-let GroupViews = ({groups}) => {
+let GroupViews = ({groups, activeTab, handleTabChange}) => {
   let style = {
     display: 'flex',
     flexDirection: 'row',
@@ -83,7 +102,7 @@ let GroupViews = ({groups}) => {
   if(!groups)
     return <ProgressBar type="circular" mode="indeterminate" />
     let keys = Object.keys(groups);
-    return <Tabs>
+    return <Tabs index={activeTab} onChange={handleTabChange}>
         {
           Object.keys(STATUS).map(status => {
             let count = keys.filter(key => groups[key] == status).length;
@@ -104,3 +123,5 @@ let GroupViews = ({groups}) => {
       </Tabs>
 
 }
+
+export default Dashboard

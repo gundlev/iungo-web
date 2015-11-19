@@ -1,8 +1,11 @@
 import React from 'react'
 import firebaseUtils from '../../utils/firebaseUtils'
 
-module.exports = class Register extends React.Component{
-
+class Register extends React.Component{
+  constructor(props){
+    super(props)
+  }
+  
   handleSubmit = (e) => {
     e.preventDefault();
     var email = this.refs.email.value;
@@ -32,3 +35,5 @@ module.exports = class Register extends React.Component{
     )
   }
 }
+
+export default Register

@@ -41,13 +41,13 @@ export default {
         authData.email = userObj.email;
         cachedUser = authData;
         cb && cb(authData);
-        this.onChange(true);
+        this.onChange(authData);
         cbOnRegister && cbOnRegister(true);
       }
     });
   },
-  isLoggedIn(){
-    return cachedUser && true || ref.getAuth() || false;
+  loggedInUser(){
+    return cachedUser || ref.getAuth() || false;
   },
   logout(){
     ref.unauth();
