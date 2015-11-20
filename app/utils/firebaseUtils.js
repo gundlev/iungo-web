@@ -5,7 +5,7 @@ let ref = new Firebase(URL);
 let cachedUser = null;
 
 let addNewUserToFB = (newUser, {uid} = newUser) =>
-  ref.child('user').child(uid).set(newUser);
+  ref.child('users').child(uid).set(newUser);
 
 export default {
   createUser(user, cb) {
@@ -24,9 +24,18 @@ export default {
       } else {
           this.loginWithPW(user, function(authData){
             addNewUserToFB({
-              email: user.email,
               uid: authData.uid,
-              token: authData.token
+              email: user.email,
+              name: user.name,
+              title: user.title,
+              company: user.company,
+              address: "",
+              description: "",
+              mobilNo: "",
+              phoneNo: "",
+              notifications: 0,
+              picture: "",
+              website: ""
             });
           }, cb);
       }

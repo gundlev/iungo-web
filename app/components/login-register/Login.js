@@ -44,7 +44,7 @@ class Login extends React.Component{
       <div className="col-sm-6 col-sm-offset-3">
         <form onSubmit={this.handleSubmit}>
           <Input name="email" type='text' label='Email' value={this.state.email} onChange={this.handleChange.bind(this, 'email')}  required/>
-          <Input name="password" type='password' label='Password' value={this.state.pw} onChange={this.handleChange.bind(this, 'password')}  required/>
+          <Input name="password" type='password' label='Password' value={this.state.password} onChange={this.handleChange.bind(this, 'password')}  required/>
           <Button className={Style.loginButton} label='Login' raised primary />
           {errors}
         </form>
