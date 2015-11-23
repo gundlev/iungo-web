@@ -9,11 +9,19 @@
   text-align: right;
 }
 
+.testButton {
+  color: green;
+}
+
 .appBarLink {
   padding: $unit;
 }
 
 .loginButton {
   flex-grow: 1;
+}
 
+.headlineStyle {
+  flex-grow: 1;
+  text-align: center;
 }

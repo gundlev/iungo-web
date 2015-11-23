@@ -59,7 +59,9 @@ class Dashboard extends Component{
   }
 
   render(){
-    return <GroupViews handleTabChange={this.handleTabChange} activeTab={this.state.activeTab} groups={this.state.groups}/>
+    return (
+      <GroupViews handleTabChange={this.handleTabChange} activeTab={this.state.activeTab} groups={this.state.groups}/>
+    )
   }
 
 }

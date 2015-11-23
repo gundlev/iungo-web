@@ -6,12 +6,14 @@ import Login from "../components/login-register/Login"
 import Logout from '../components/login-register/Logout'
 import Dashboard from '../components/secure/Dashboard'
 import Home from "../components/Home"
+import NewMeeting from "../components/secure/NewMeeting"
 
 import requireAuth from '../utils/authenticated'
 
 export default
 <Route path="/" component={Main}>
   <IndexRoute component={Home}/>
+  <Route path="newMeeting" component={NewMeeting} onEnter={requireAuth}/>
   <Route path="login" component={Login} />
   <Route path="logout" component={Logout} />
   <Route path="register" component={Register} />

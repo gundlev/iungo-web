@@ -62,5 +62,9 @@ export default {
     ref.unauth();
     cachedUser = null;
     this.onChange(false);
+  },
+  createNewMeetingToFB(meeting, gid) {
+    ref.child('networkgroups').child(gid).child('meetings').push(meeting)
+    console.log("Done");
   }
 };
