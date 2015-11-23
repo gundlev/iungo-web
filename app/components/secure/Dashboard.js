@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import Rebase from 're-base'
+import {TransitionMotion, spring, presets} from 'react-motion'
 
 import {URL} from '../../config/firebase'
 let base = Rebase.createClass(URL)
@@ -82,14 +83,70 @@ class GroupCard extends Component{
 
   getCardDescription = ({meetings={}, members={}}) => `Meetings: ${Object.keys(meetings).length}  |  Members: ${Object.keys(members).length}`
 
+  preset = [50, 13]
+
+  defaultStyles = () => {
+    return {
+      val: {
+        //height: spring(0),
+        y: spring(200),
+        opacity: spring(0),
+        scale: spring(0.3)
+      }
+    }
+  }
+
+  getStyles = () => {
+    return {
+      val: {
+        //height: spring(226),
+        y: spring(0, this.preset),
+        opacity: spring(1, this.preset),
+        scale: spring(1, this.preset)
+      }
+    }
+  }
+
+  willLeave = () => {
+    return {
+      val: {
+        //height: spring(0),
+        y: spring(0),
+        opacity: spring(0),
+        scale: spring(0)
+      }
+    }
+  }
+
+  willEnter = () => {
+    return {
+      val: {
+        //height: spring(0),
+        y: spring(0),
+        opacity: spring(0),
+        scale: spring(0)
+      }
+    }
+  }
+
   render(){ return this.state.group
-    ? <Card
+    ? <div>
+    <TransitionMotion
+      defaultStyles={this.defaultStyles()} styles={this.getStyles()}
+      willEnter={this.willEnter} willLeave={this.willLeave}
+      >
+      {({val: {y, opacity, scale}}) =>
+    <div style={{opacity, transform: `translate(0px, ${y}px) scale(${scale})`}}>
+    <Card
         image={'data:image/jpg;base64,' + this.state.group.image}
         text={this.getCardDescription(this.state.group)}
         title={this.state.group.name}
         color="rgba(0,0,0,.4)"
-      />
+      /></div>
+    }</TransitionMotion>
+    </div>
     : <ProgressBar type="circular" mode="indeterminate" />
+
   }
 }
 
@@ -101,6 +158,9 @@ let GroupViews = ({groups, activeTab, handleTabChange}) => {
     flexDirection: 'row',
     flexWrap: 'wrap'
   }
+
+
+
   if(!groups)
     return <ProgressBar type="circular" mode="indeterminate" />
     let keys = Object.keys(groups);
@@ -112,9 +172,11 @@ let GroupViews = ({groups, activeTab, handleTabChange}) => {
             return (<Tab label={status}>
               { count
                 ? <div style={style}>
-                    {keys.map(id =>
-                      <div style={{margin: 3}}><GroupCard id={id}/></div>
-                    )}
+                    {keys.map(id =>{
+                      return <div style={{margin: 3}}>
+                        <GroupCard id={id}/>
+                      </div>
+                    })}
                   </div>
                 : <EmptyGroupCard type={status} />
               }
