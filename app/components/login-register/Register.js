@@ -1,9 +1,9 @@
-import React from 'react'
+import React, {Component} from 'react'
 import firebaseUtils from '../../utils/firebaseUtils'
 import {Button, Input} from 'react-toolbox'
 import Style from '../../style.scss'
 
-class Register extends React.Component{
+class Register extends Component{
   constructor(props){
     super(props)
     this.state = {

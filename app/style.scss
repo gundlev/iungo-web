@@ -1,5 +1,7 @@
 @import "~react-toolbox/components/commons";
 
+$dialog-translate-y: 4 * $unit;
+
 .content {
   padding: $unit;
 }
@@ -24,4 +26,35 @@
 .headlineStyle {
   flex-grow: 1;
   text-align: center;
+}
+
+.meetingModal {
+  flex-grow: 1;
+  width: 500px;
+  height: 500px;
+  background-color: green;
+}
+
+.modalDiv {
+  background-color: white;
+  width: 500px;
+  opacity: 1;
+  z-index: 0;
+  padding: 30px;
+  border-radius: 3px;
+  box-shadow: $zdepth-shadow-5;
+  // Not yet functioning
+  transition-delay: $animation-delay;
+  transition-timing-function: $animation-curve-default;
+  transition-duration: $animation-duration;
+  transition-property: opacity, transform;
+  transform: translateY(-$dialog-translate-y);
+  &.active {
+    opacity: 1;
+    transform: translateY(0%);
+  }
+}
+
+.whiteC {
+  background-color: white;
 }
