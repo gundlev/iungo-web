@@ -24,7 +24,6 @@ class Main extends React.Component{
     var links = []
     if (this.state.auth) {
       links = [
-        {href: "/newMeeting", label: "New Meeting"},
         {href: "/", label: "Home"},
         {href: "/dashboard", label: "Dashboard"},
         {href: "/logout", label: "Logout"}
