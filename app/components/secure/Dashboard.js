@@ -6,12 +6,15 @@ import {URL} from '../../config/firebase'
 let base = Rebase.createClass(URL)
 
 import {Tab, Tabs, Card, ProgressBar} from 'react-toolbox';
+import Time from 'react-time'
+
+import groupBy from 'lodash.groupby'
 
 const STATUS = {
   aktiv     : 'active',
   inaktiv   : 'inactive',
   invitered : 'invited'
-}
+}, statusToLabel = (status) => STATUS[status]
 
 let refs = []
 
@@ -24,10 +27,12 @@ function listenTo(path, options){
 class Dashboard extends Component{
   constructor(props){
     super(props)
-    console.log(props)
+
     this.state = {
-      groups: null,
-      activeTab: 0
+      groups: {},
+      status: {},
+      activeTabGroups: 0,
+      activeTabMeetings: 0
     }
   }
 
@@ -39,10 +44,20 @@ class Dashboard extends Component{
         let ref = groupRefs[key];
         listenTo(ref, {
           context: this,
-          then(status){
-            let groups = Object.assign({}, this.state.groups);
-            groups[key] = status;
-            this.setState({groups})
+          then(s){
+            this.setState({status: {
+              [key]: s,
+              ...this.state.status
+            }})
+            listenTo(`networkgroups/${key}`, {
+              context: this,
+              then(group){
+                this.setState({groups: {
+                  [key]: group,
+                  ...this.state.groups
+                }})
+              }
+            })
           }
         })
       })
@@ -55,36 +70,114 @@ class Dashboard extends Component{
     refs = []
   }
 
-  handleTabChange = (activeTab) => {
-    this.setState({activeTab})
+  handleGroupTabChange = (activeTabGroups) => {
+    this.setState({activeTabGroups})
+  }
+
+  handleMeetingTabChange = (activeTabMeetings) => {
+    this.setState({activeTabMeetings})
   }
 
   render(){
+    const groupTabs = deriveGroupTabs(this.state.status, this.state.groups)
+
+    const meetings = Object.keys(this.state.status)
+      .filter(status => this.state.status[status] === "aktiv")
+      .map(key => this.state.groups[key])
+      .reduce((acc, group) => group
+          ? {
+            ...group.meetings, ...acc
+          } : acc
+      , {})
+
+    const partition = groupBy(Object.keys(meetings), key => ~~(Date.now()/1000) >= meetings[key].startTimestamp ? "past" : "future")
+
+    const meetingTabs = Object.keys(partition).reduce((acc, key) =>
+    Object.assign(acc, {[key]: partition[key].map(key => <MeetingCard meeting={meetings[key]}/>).concat(acc[key])}),
+    {
+      "future": [],
+      "past": []
+    })
+
     return (
-      <GroupViews handleTabChange={this.handleTabChange} activeTab={this.state.activeTab} groups={this.state.groups}/>
+      <div>
+        <ItemsRow
+          handleTabChange={this.handleGroupTabChange}
+          activeTab={this.state.activeTabGroups}
+          labels={Object.keys(STATUS).map(statusToLabel)}
+          tabs={groupTabs}/>
+        <ItemsRow
+          handleTabChange={this.handleMeetingTabChange}
+          activeTab={this.state.activeTabMeetings}
+          labels={["future", "past"]}
+          tabs={meetingTabs}
+          />
+      </div>
     )
   }
 
 }
 
-class GroupCard extends Component{
-  constructor(props){
-    super(props)
-    this.state = {
-      group: null
-    }
-    listenTo(`networkgroups/${props.id}`, {
-      context: this,
-      then(group){
-        this.setState({group})
-      }
-    })
-  }
+function deriveGroupTabs(status, groups){
+  return Object.keys(STATUS).reduce((acc, s) => {
+    const ids_with_status = Object.keys(status)
+      .filter(ss => status && status[ss] == s)
 
-  getCardDescription = ({meetings={}, members={}}) => `Meetings: ${Object.keys(meetings).length}  |  Members: ${Object.keys(members).length}`
+    const groups_with_status = (groups) => Object.keys(groups)
+      .filter(key => ids_with_status.indexOf(key) > -1)
+      .map(key => groups[key])
 
-  preset = [50, 13]
+    return Object.keys(groups).length
+      ? Object.assign(acc, {
+        [statusToLabel(s)]: groups_with_status(groups)
+          .map(group => <GroupCard group={group}/>)
+      })
+      : acc
+  }, {})
+}
 
+function MeetingsRow({groups}){
+  return (
+    <div>meetings</div>
+  )
+}
+
+function MeetingCard({/*id,*/ meeting}){
+
+  const getCardDescription = ({startTimestamp, endTimestamp}) => `start: ${<Time value={new Date(startTimestamp*1000)} format="DD/MM HH:mm"/>} - end: ${new Date(endTimestamp*1000)}`
+  return meeting
+    ? <Card
+        image={'http://placehold.it/320x175'}
+        text={getCardDescription(meeting)}
+        title={meeting.title}
+        color="rgba(0,0,0,.4)"
+      />
+    : <ProgressBar type="circular" mode="indeterminate" />
+}
+
+function GroupCard({/*id,*/ group}){
+
+  const getCardDescription = ({meetings={}, members={}}) => `Meetings: ${Object.keys(meetings).length}  |  Members: ${Object.keys(members).length}`
+
+  return group
+    ? <Card
+        image={'data:image/jpg;base64,' + group.image}
+        text={getCardDescription(group)}
+        title={group.name}
+        color="rgba(0,0,0,.4)"
+      />
+    : <ProgressBar type="circular" mode="indeterminate" />
+}
+
+let EmptyGroupCard = ({type}) => <div> no {type} groups</div>
+
+let ItemsRow = ({labels, tabs, activeTab, handleTabChange}) => {
+  const style = {
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'wrap'
+  },
+  preset = [50, 13],
   defaultStyles = () => {
     return {
       val: {
@@ -94,19 +187,17 @@ class GroupCard extends Component{
         scale: spring(0.3)
       }
     }
-  }
-
+  },
   getStyles = () => {
     return {
       val: {
         //height: spring(226),
-        y: spring(0, this.preset),
-        opacity: spring(1, this.preset),
-        scale: spring(1, this.preset)
+        y: spring(0, preset),
+        opacity: spring(1, preset),
+        scale: spring(1, preset)
       }
     }
-  }
-
+  },
   willLeave = () => {
     return {
       val: {
@@ -116,8 +207,7 @@ class GroupCard extends Component{
         scale: spring(0)
       }
     }
-  }
-
+  },
   willEnter = () => {
     return {
       val: {
@@ -127,65 +217,40 @@ class GroupCard extends Component{
         scale: spring(0)
       }
     }
-  }
+  },
+  cardStyle = ({opacity, y, scale}) => ({
+    opacity,
+    transform: `translate(0px, ${y}px) scale(${scale})`
+  })
 
-  render(){ return this.state.group
-    ? <div>
-    <TransitionMotion
-      defaultStyles={this.defaultStyles()} styles={this.getStyles()}
-      willEnter={this.willEnter} willLeave={this.willLeave}
-      >
-      {({val: {y, opacity, scale}}) =>
-    <div style={{opacity, transform: `translate(0px, ${y}px) scale(${scale})`}}>
-    <Card
-        image={'data:image/jpg;base64,' + this.state.group.image}
-        text={this.getCardDescription(this.state.group)}
-        title={this.state.group.name}
-        color="rgba(0,0,0,.4)"
-      /></div>
-    }</TransitionMotion>
-    </div>
-    : <ProgressBar type="circular" mode="indeterminate" />
-
-  }
-}
-
-let EmptyGroupCard = ({type}) => <div> no {type} groups</div>
-
-let GroupViews = ({groups, activeTab, handleTabChange}) => {
-  let style = {
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap'
-  }
-
-
-
-  if(!groups)
-    return <ProgressBar type="circular" mode="indeterminate" />
-    let keys = Object.keys(groups);
     return <Tabs index={activeTab} onChange={handleTabChange}>
         {
-          Object.keys(STATUS).map(status => {
-            let count = keys.filter(key => groups[key] == status).length;
-            console.log("count", status, count)
-            return (<Tab label={status}>
-              { count
-                ? <div style={style}>
-                    {keys.map(id =>{
-                      return <div style={{margin: 3}}>
-                        <GroupCard id={id}/>
+          labels.map(label => {
+            if(!tabs[label]) return (
+              <Tab label={label}><ProgressBar type="circular" mode="indeterminate" /></Tab>
+            )
+
+            return (<Tab label={label}>
+              { <div style={style}>
+                    {tabs[label].map(tab =>
+                      <div style={{margin: 3}}>
+                        <TransitionMotion
+                          defaultStyles={defaultStyles()} styles={getStyles()}
+                          willEnter={willEnter} willLeave={willLeave}
+                        >{
+                          ({val}) =>
+                            <div style={cardStyle(val)}>
+                              {tab}
+                            </div>
+                        }</TransitionMotion>
                       </div>
-                    })}
-                  </div>
-                : <EmptyGroupCard type={status} />
+                    )}
+                </div>
               }
             </Tab>)
-
           })
         }
       </Tabs>
-
 }
 
 export default Dashboard

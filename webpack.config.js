@@ -1,11 +1,12 @@
 var path = require('path');
 var webpack = require('webpack');
-const autoprefixer = require('autoprefixer');
+var autoprefixer = require('autoprefixer');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
   context: __dirname,
-  devtool: 'inline-source-map',
+  cache: true,
+  devtool: 'eval-source-map',
   entry: [
     'webpack-dev-server/client?http://localhost:3000',
     'webpack/hot/only-dev-server',
@@ -39,6 +40,7 @@ module.exports = {
   postcss: [autoprefixer],
   toolboxTheme: 'theme.scss',
   plugins: [
+    //new webpack.optimize.UglifyJsPlugin({minimize: true}),
     new ExtractTextPlugin('react-toolbox.css', { allChunks: true }),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoErrorsPlugin(),
