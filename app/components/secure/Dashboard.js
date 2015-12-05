@@ -5,7 +5,7 @@ import {TransitionMotion, spring, presets} from 'react-motion'
 import {URL} from '../../config/firebase'
 let base = Rebase.createClass(URL)
 
-import {Tab, Tabs, Card, ProgressBar} from 'react-toolbox';
+import {Tab, Tabs, Card, CardTitle, CardMedia, ProgressBar} from 'react-toolbox';
 import Time from 'react-time'
 
 import groupBy from 'lodash.groupby'
@@ -147,11 +147,16 @@ function MeetingCard({/*id,*/ meeting}){
   const getCardDescription = ({startTimestamp, endTimestamp}) => `start: ${<Time value={new Date(startTimestamp*1000)} format="DD/MM HH:mm"/>} - end: ${new Date(endTimestamp*1000)}`
   return meeting
     ? <Card
-        image={'http://placehold.it/320x175'}
-        text={getCardDescription(meeting)}
-        title={meeting.title}
         color="rgba(0,0,0,.4)"
-      />
+        style={{width: "350px", height: "220px"}}>
+        <CardMedia
+          aspectRatio="wide"
+          image={'http://placehold.it/320x175'}>
+        </CardMedia>
+        <CardTitle
+          title={meeting.title}
+          subtitle={getCardDescription(meeting)}/>
+      </Card>
     : <ProgressBar type="circular" mode="indeterminate" />
 }
 
@@ -161,11 +166,17 @@ function GroupCard({/*id,*/ group}){
 
   return group
     ? <Card
-        image={'data:image/jpg;base64,' + group.image}
-        text={getCardDescription(group)}
-        title={group.name}
         color="rgba(0,0,0,.4)"
-      />
+        style={{width: "350px", height: "220px"}}>
+        <CardMedia
+          aspectRatio="square"
+          contentOverlay={true}
+          image={'data:image/jpg;base64,' + group.image}>
+          <CardTitle
+            title={group.name}
+            subtitle={getCardDescription(group)}/>
+        </CardMedia>
+      </Card>
     : <ProgressBar type="circular" mode="indeterminate" />
 }
 
@@ -230,24 +241,23 @@ let ItemsRow = ({labels, tabs, activeTab, handleTabChange}) => {
               <Tab label={label}><ProgressBar type="circular" mode="indeterminate" /></Tab>
             )
 
-            return (<Tab label={label}>
+            return <Tab label={label}>
               { <div style={style}>
                     {tabs[label].map(tab =>
-                      <div style={{margin: 3}}>
+                      <div style={{margin: 6}}>
                         <TransitionMotion
                           defaultStyles={defaultStyles()} styles={getStyles()}
-                          willEnter={willEnter} willLeave={willLeave}
-                        >{
-                          ({val}) =>
+                          willEnter={willEnter} willLeave={willLeave}>
+                          {({val}) =>
                             <div style={cardStyle(val)}>
                               {tab}
-                            </div>
-                        }</TransitionMotion>
+                            </div>}
+                        </TransitionMotion>
                       </div>
                     )}
                 </div>
               }
-            </Tab>)
+            </Tab>
           })
         }
       </Tabs>

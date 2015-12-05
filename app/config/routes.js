@@ -13,8 +13,8 @@ import requireAuth from '../utils/authenticated'
 export default
 <Route path="/" component={Main}>
   <IndexRoute component={Home}/>
-  <Route path="newMeeting" component={NewMeeting} onEnter={requireAuth}/>
-  <Route path="myMeetings" component={MyMeetings} onEnter={requireAuth}/>
+  <Route path="meetings/new" component={NewMeeting} onEnter={requireAuth}/>
+  <Route path="meetings" component={MyMeetings} onEnter={requireAuth}/>
   <Route path="login" component={Login} />
   <Route path="logout" component={Logout} />
   <Route path="register" component={Register} />

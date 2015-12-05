@@ -5,9 +5,8 @@ import {Input, Button, DatePicker, TimePicker} from 'react-toolbox'
 import utils from '../../utils/firebaseUtils'
 import {URL} from '../../config/firebase'
 import autobind from 'autobind-decorator'
-import Modal from 'simple-react-modal'
 import Style from '../../style.scss'
-import Overlay from 'react-toolbox/lib/overlay'
+import Dialog from 'react-toolbox/lib/dialog'
 
 
 let ref = new Firebase(URL);
@@ -151,31 +150,22 @@ class NewMeeting extends Component {
 
   render() {
     return (
-      <div>
-      <Overlay active={this.state.visible} onClick={this.onOverlayClick}>
-        {this.state.visible &&
-          <div className={Style.modalDiv}>
-            <h4 className="headlineStyle">Create new meeting</h4>
-            <form onSubmit={this.handleSubmit}>
-              <Input name="title" type='text' label='Title' value={this.state.title} onChange={this.handleChange.bind(this, 'title')} required />
-              <Input name="text" type='text' label='Text' value={this.state.text} onChange={this.handleChange.bind(this, 'text')} required />
-              <Input name="address" type='text' label='Address' value={this.state.address} onChange={this.handleChange.bind(this, 'address')} required />
-              <DatePicker value={this.state.date} placeholder="Dato" name='date' onChange={this.handleDateChange.bind(this)}/>
-              <TimePicker value={this.state.startTime} placeholder="Start Tid" label="Start Time" onChange={this.handleTimeChange.bind(this, 'startTime')} required />
-              <TimePicker value={this.state.endTime} placeholder="Slut Tid" label="End Time" onChange={this.handleTimeChange.bind(this, 'endTime')} required />
-              <Button label="submit" raised primary/>
-            </form>
-          </div>}
-      </Overlay>
+    <div>
+      <Dialog active={this.state.visible} onOverlayClick={this.onOverlayClick}>
+        <h4 className="headlineStyle">Create new meeting</h4>
+        <form onSubmit={this.handleSubmit}>
+          <Input name="title" type='text' label='Title' value={this.state.title} onChange={this.handleChange.bind(this, 'title')} required />
+          <Input name="text" type='text' label='Text' value={this.state.text} onChange={this.handleChange.bind(this, 'text')} required />
+          <Input name="address" type='text' label='Address' value={this.state.address} onChange={this.handleChange.bind(this, 'address')} required />
+          <DatePicker value={this.state.date} placeholder="Dato" name='date' label="Date" minDate={new Date()} onChange={this.handleDateChange.bind(this)}/>
+          <TimePicker value={this.state.startTime} placeholder="Start Tid" label="Start Time" onChange={this.handleTimeChange.bind(this, 'startTime')} required />
+          <TimePicker value={this.state.endTime} placeholder="Slut Tid" label="End Time" onChange={this.handleTimeChange.bind(this, 'endTime')} required />
+          <Button icon='arrow_forward' floating accent style={{position: 'absolute', right: "-30px", top: "260px"}}/>
+        </form>
+      </Dialog>
       <Button label="New meeting" onClick={this.onClick} raised primary/>
-      </div>
-    )
+    </div>)
   }
 }
-
-// <Modal className={Style.meetingModal} closeOnOuterClick={true} show={this.state.visible} >
-//   <h2>Modal text here</h2>
-//   <input type="text" />
-// </Modal>
 
 export default NewMeeting
