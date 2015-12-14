@@ -6,10 +6,9 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin');
 module.exports = {
   context: __dirname,
   cache: true,
-  devtool: 'eval-source-map',
+  devtool: 'cheap-module-eval-source-map',
   entry: [
-    'webpack-dev-server/client?http://localhost:3000',
-    'webpack/hot/only-dev-server',
+    'webpack-hot-middleware/client',
     './app/App'
   ],
   output: {
