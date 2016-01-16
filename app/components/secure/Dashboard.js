@@ -5,7 +5,7 @@ import {TransitionMotion, spring, presets} from 'react-motion'
 import {URL} from '../../config/firebase'
 let base = Rebase.createClass(URL)
 
-import {Tab, Tabs, Card, CardTitle, CardMedia, ProgressBar} from 'react-toolbox';
+import {Tab, Tabs, Button, Card, CardTitle, CardMedia, CardText, CardActions, ProgressBar} from 'react-toolbox';
 import Time from 'react-time'
 
 import groupBy from 'lodash.groupby'
@@ -142,21 +142,24 @@ function MeetingsRow({groups}){
   )
 }
 
-function MeetingCard({/*id,*/ meeting}){
-
-  const getCardDescription = ({startTimestamp, endTimestamp}) => `start: ${<Time value={new Date(startTimestamp*1000)} format="DD/MM HH:mm"/>} - end: ${new Date(endTimestamp*1000)}`
-  return meeting
+function MeetingCard({meeting, icon}){
+const {/*id,*/
+  title, address, startTimestamp, endTimestamp
+} = meeting;
+return meeting
     ? <Card
         color="rgba(0,0,0,.4)"
-        style={{width: "350px", height: "220px"}}>
-        <CardMedia
-          aspectRatio="wide"
-          image={'http://placehold.it/320x175'}>
-        </CardMedia>
-        <CardTitle
-          title={meeting.title}
-          subtitle={getCardDescription(meeting)}/>
-      </Card>
+        style={{width: "340px"}}>
+      <CardTitle
+        title={title}
+        subtitle={address}>
+          <Time value={new Date(startTimestamp*1000)} format={"DD/MM"}/>
+          <span> : </span>
+          <Time value={new Date(startTimestamp*1000)} format={"HH:mm"}/>
+          <span> - </span>
+          <Time value={new Date(endTimestamp*1000)} format={"HH:mm"}/>
+      </CardTitle>
+    </Card>
     : <ProgressBar type="circular" mode="indeterminate" />
 }
 
@@ -167,9 +170,9 @@ function GroupCard({/*id,*/ group}){
   return group
     ? <Card
         color="rgba(0,0,0,.4)"
-        style={{width: "350px", height: "220px"}}>
+        style={{width: "340px"}}>
         <CardMedia
-          aspectRatio="square"
+          aspectRatio="wide"
           contentOverlay={true}
           image={'data:image/jpg;base64,' + group.image}>
           <CardTitle

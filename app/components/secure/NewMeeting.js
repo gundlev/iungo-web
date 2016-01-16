@@ -1,71 +1,53 @@
 import React, {Component} from 'react'
+import {findDOMNode} from 'react-dom'
 import Firebase from 'firebase'
 import Rebase from 're-base'
-import {Input, Button, DatePicker, TimePicker} from 'react-toolbox'
 import utils from '../../utils/firebaseUtils'
 import {URL} from '../../config/firebase'
-import autobind from 'autobind-decorator'
-import Style from '../../style.scss'
-import Dialog from 'react-toolbox/lib/dialog'
-
 
 let ref = new Firebase(URL);
 let base = Rebase.createClass(URL)
 var initialDate = new Date();
 
+import {Button, Dialog} from 'react-toolbox'
+
+import MeetingEditor from '../SmallComponents/MeetingEditor'
 
 class NewMeeting extends Component {
 
-  constructor(props){
-    super(props)
-    /*
-    This variables date, startTime and endTime will be created and
-    added to the state.
-    */
-    this.state = {
-      error: false,
-      gid: 'iungo', //from props
-      groupName: 'IUNGO', //from props
-      title: '',
-      address: '',
-      text: '',
-      visible: false
-    }
+  state = {
+    visible: false,
+    gid: 'forsam', //from props
+    groupName: 'Forsam', //from props
   }
 
-  sendNotofications() {
-
-  }
-
-  createNewMeetingToFB = (meeting, gid, members, state) =>{
-    var meetingRef = ref.child('networkgroups').child(gid).child('meetings').push(meeting, function(error) {
-      if (error) {
-        console.log('The meeting could not be saved');
-      } else {
-        console.log("The meeting has been saved");
-        console.log(meetingRef.key());
-
-        Object.keys(members).forEach(key => {
-          ref.child('networkgroups').child(gid).child('noti').push({
-            from: state.gid,
-            fromName: state.groupName,
-            read: false,
-            to: key,
-            title: "Nyt møde hos " + state.groupName,
-            type: 'newMeeting',
-            reference: "/networkgroups/" + state.groupName + "/meetings/" + meetingRef.key(),
-            timestamp: new Date().getTime()
-          })
-        })
-      }
+  onClick = () => {
+    this.setState({
+      visible: true
     })
-    console.log("Done");
-
   }
 
-  handleSubmit = (e) => {
-    e.preventDefault();
+  closeModal = () => {
+    this.setState({
+      visible: false
+    })
+  }
+
+  onOverlayClick = () => {
+    this.setState({
+      visible: false
+    })
+  }
+
+  handleSubmit = (formData) => {
     console.log("submitted!")
+
+    console.log("formData", formData)
+
+    const {
+      title, address, agenda, date, startTime, endTime, notification,
+    } = formData
+
     var path = 'networkgroups/' + this.state.gid + '/members'
     console.log(path);
     var result = base.fetch(path, {
@@ -76,29 +58,29 @@ class NewMeeting extends Component {
           part[key] = {status: 0}
         })
         console.log(part);
-        var date = this.state.date
-        var start = this.state.startTime
-        var end = this.state.endTime
+
+
         this.createNewMeetingToFB({
-          title: this.state.title,
-          address: this.state.address,
+          title,
+          address,
           endTimestamp: new Date(
             date.getFullYear(),
             date.getMonth(),
             date.getDate(),
-            end.getHours(),
-            end.getMinutes(),
-            end.getSeconds()).getTime()/1000,
+            endTime.getHours(),
+            endTime.getMinutes(),
+            endTime.getSeconds()).getTime()/1000,
           startTimestamp: new Date(
             date.getFullYear(),
             date.getMonth(),
             date.getDate(),
-            start.getHours(),
-            start.getMinutes(),
-            start.getSeconds()).getTime()/1000,
+            startTime.getHours(),
+            startTime.getMinutes(),
+            startTime.getSeconds()).getTime()/1000,
           participants: part,
-          text: this.state.text
-        }, 'Test', data, this.state)
+          text: agenda
+        }, this.state.gid, this.state.groupName, notification, data)
+
         /*
         TODO: Check if the meeting was successfully created
         (use rebase in utils and have createNewMeetingToFB return true or false),
@@ -109,62 +91,44 @@ class NewMeeting extends Component {
     })
   }
 
-  handleChange = (name, event) => {
-    const newState = {};
-    newState[`${name}`] = event.target.value;
-    this.setState(newState);
-    console.log(this.state);
-  }
-
-  handleDateChange = (value) => {
-    this.setState({
-      date: value
-    });
-    console.log(this.state);
-  };
-
-  handleTimeChange = (item, value) => {
-    const newState = {};
-    newState[item] = value;
-    this.setState(newState);
-  }
-
-  onClose = () => {
-    this.setState({
-      visible: false
+  createNewMeetingToFB = (meeting, gid, groupName, notification, members) =>{
+    var meetingRef = ref.child('networkgroups').child(gid).child('meetings').push(meeting, function(error) {
+      if (error) {
+        console.log('The meeting could not be saved');
+      } else {
+        console.log("The meeting has been saved");
+        console.log(meetingRef.key());
+      if(notification){
+        Object.keys(members).forEach(key => {
+          ref.child('notifications').push({
+            from: gid,
+            fromName: groupName,
+            read: false,
+            to: key,
+            title: "Nyt møde hos " + groupName,
+            type: 'newMeeting',
+            reference: "/networkgroups/" + gid + "/meetings/" + meetingRef.key(),
+            timestamp: new Date().getTime()
+          })
+        })
+      }
+      }
     })
-    this.state.visible = false
+    console.log("Done");
+    this.closeModal()
   }
 
-  onOverlayClick = () => {
-    this.setState({
-      visible: false
-    })
-  }
-
-  onClick = () => {
-    this.setState({
-      visible: true
-    })
-  }
-
-  render() {
+  render(){
     return (
-    <div>
-      <Dialog active={this.state.visible} onOverlayClick={this.onOverlayClick}>
-        <h4 className="headlineStyle">Create new meeting</h4>
-        <form onSubmit={this.handleSubmit}>
-          <Input name="title" type='text' label='Title' value={this.state.title} onChange={this.handleChange.bind(this, 'title')} required />
-          <Input name="text" type='text' label='Text' value={this.state.text} onChange={this.handleChange.bind(this, 'text')} required />
-          <Input name="address" type='text' label='Address' value={this.state.address} onChange={this.handleChange.bind(this, 'address')} required />
-          <DatePicker value={this.state.date} placeholder="Dato" name='date' label="Date" minDate={new Date()} onChange={this.handleDateChange.bind(this)}/>
-          <TimePicker value={this.state.startTime} placeholder="Start Tid" label="Start Time" onChange={this.handleTimeChange.bind(this, 'startTime')} required />
-          <TimePicker value={this.state.endTime} placeholder="Slut Tid" label="End Time" onChange={this.handleTimeChange.bind(this, 'endTime')} required />
-          <Button icon='arrow_forward' floating accent style={{position: 'absolute', right: "-30px", top: "260px"}}/>
-        </form>
-      </Dialog>
-      <Button label="New meeting" onClick={this.onClick} raised primary/>
-    </div>)
+  <div>
+    <Dialog
+      active={this.state.visible}
+      onOverlayClick={this.onOverlayClick}>
+      <h4 className="headlineStyle">Create new meeting</h4>
+    <MeetingEditor handleFormSubmit={this.handleSubmit.bind(this)}/>
+    </Dialog>
+    <Button label="New meeting" onClick={this.onClick} raised primary/>
+  </div>)
   }
 }
 
