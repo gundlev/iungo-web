@@ -58,3 +58,18 @@ $dialog-translate-y: 4 * $unit;
 .whiteC {
   background-color: white;
 }
+
+.masterDetail {
+  display: flex;
+  flex-direction: row;
+}
+
+.master {
+  flex-basis: 250px;
+  //flex-grow: 1;
+}
+
+.detail {
+  flex-basis: auto;
+  //flex-grow: 3;
+}

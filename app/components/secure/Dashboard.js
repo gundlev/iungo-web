@@ -2,7 +2,8 @@ import React, {Component} from 'react'
 import Rebase from 're-base'
 import {TransitionMotion, spring, presets} from 'react-motion'
 
-import {URL} from '../../config/firebase'
+//import {URL} from '../../config/firebase'
+const URL = "https://brilliant-torch-4963.firebaseio.com/"
 let base = Rebase.createClass(URL)
 
 import {Tab, Tabs, Button, Card, CardTitle, CardMedia, CardText, CardActions, ProgressBar} from 'react-toolbox';

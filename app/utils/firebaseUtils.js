@@ -1,5 +1,6 @@
 import Firebase from 'firebase'
-import {URL} from '../config/firebase'
+//import {URL} from '../config/firebase'
+const URL = "https://brilliant-torch-4963.firebaseio.com/"
 
 let ref = new Firebase(URL);
 let cachedUser = null;

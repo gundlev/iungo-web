@@ -6,6 +6,7 @@ import utils from '../../utils/firebaseUtils'
 import {URL} from '../../config/firebase'
 import Style from '../../style.scss'
 import MeetingList from '../SmallComponents/MeetingList.js'
+import MeetingDetail from '../SmallComponents/MeetingDetail.js'
 
 /*
 1. make call to ngroup for the user and get references
@@ -24,10 +25,11 @@ class MyMeetings extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      selectedMeeting: "",
       lists: {},
       meetings: {},
       categories: ['Tilmeldt', 'Afmeldt', 'Ikke svaret'],
-      current: {},
+      current: [],
       currentTabIndex: 0,
       groups: {}
     }
@@ -37,7 +39,7 @@ class MyMeetings extends Component {
     console.log('Categorizing!')
     var meetings = this.state.meetings
     var currentTabIndex = this.state.currentTabIndex
-    this.setState({current: {}})
+    var allCurrent = []
     Object.keys(meetings).forEach(group =>{
       Object.keys(meetings[group]).forEach(meetingId => {
         if (meetingId != 'groupName') {
@@ -46,63 +48,73 @@ class MyMeetings extends Component {
           if (currentTabIndex === 0 && val === 1) {
             var meeting = meetings[group][meetingId]
             meeting['groupId'] = group
-            meeting['groupName'] = meetings[group]['groupName'] 
-            this.setState({
-              current: {
-                [meetingId] : meeting,
-                ...this.state.current
-              }
-            })
+            meeting['groupName'] = meetings[group]['groupName']
+            meeting['id'] = meetingId 
+            allCurrent.push(meeting)
+            // this.setState({
+            //   current: {
+            //     [meetingId] : meeting,
+            //     ...this.state.current
+            //   }
+            // })
           } else if (currentTabIndex === 1 && val === -1) {
             var meeting = meetings[group][meetingId]
             meeting['groupId'] = group
-            meeting['groupName'] = meetings[group]['groupName'] 
-            this.setState({
-              current: {
-                [meetingId] : meeting,
-                ...this.state.current
-              }
-            })
+            meeting['groupName'] = meetings[group]['groupName']
+            meeting['id'] = meetingId 
+            allCurrent.push(meeting)
+            // this.setState({
+            //   current: {
+            //     [meetingId] : meeting,
+            //     ...this.state.current
+            //   }
+            // })
           } else if (currentTabIndex === 2 && val === 0) {
             var meeting = meetings[group][meetingId]
             meeting['groupId'] = group
             meeting['groupName'] = meetings[group]['groupName']
-            this.setState({
-              current: {
-                [meetingId] : meeting,
-                ...this.state.current
-              }
-            })
+            meeting['id'] = meetingId
+            allCurrent.push(meeting)
+            // this.setState({
+            //   current: {
+            //     [meetingId] : meeting,
+            //     ...this.state.current
+            //   }
+            // })
           }
         }
       })
     })
+    allCurrent.sort(function(a, b) {return a['startTimestamp'] - b['startTimestamp']})
+    this.setState({current: allCurrent})
   }
 
   componentDidMount(){
+    //var allMeetings = {}
     listenTo(`users/${this.props.uid}/ngroup`, {
       context: this,
       then(groupRefs){
-        console.log('Recieved from ngroup');
+        //console.log('Recieved from ngroup');
         Object.keys(groupRefs).forEach(key =>{
           let ref = groupRefs[key];
           listenTo(ref, {
             context: this,
             then(s){
-              console.log('Recieved from aktiv status');
+              //console.log('Recieved from aktiv status');
               if (s === 'aktiv') {
                 listenTo(`networkgroups/${key}`, {
                   context: this,
                   state: 'groups',
                   then(group){
-                    console.log('Recieved from group');
-                    console.log('The key ' + key);
-                    console.log(group);
+                    // console.log('Recieved from group');
+                    // console.log('The key ' + key);
+                    // console.log(group);
                     if (group.hasOwnProperty('meetings')) {
-                      console.log('Has meetings');
+                      //console.log('Has meetings');
                       var meetings = group['meetings']
                       meetings['groupName'] = group['name']
                       //console.log(meetings)
+                      //allMeetings[key] = meetings
                       this.setState({meetings: {
                         [key]: meetings,
                         ...this.state.meetings
@@ -124,16 +136,165 @@ class MyMeetings extends Component {
     refs = []
   }
 
+  onMeetingSelected = (meetingId) => {
+    this.setState({selectedMeeting:meetingId})
+  }
+
   render() {
+
     return(
-      <div>
-        <MeetingList list={this.state.current} />
+      <div className={Style.masterDetail}>
+        <div className={Style.master}>
+          <MeetingList list={this.state.current} onMeetingSelected={this.onMeetingSelected} />
+        </div>
+        <div className={Style.detail}>
+          <MeetingDetail meeting={this.state.selectedMeeting}/>
+        </div>
       </div>
     )
   }
 }
 
 export default MyMeetings
+
+
+// import React, {Component} from 'react'
+// import Firebase from 'firebase'
+// import Rebase from 're-base'
+// import {List} from 'react-toolbox'
+// import utils from '../../utils/firebaseUtils'
+// //import {URL} from '../../config/firebase'
+// const URL = "https://brilliant-torch-4963.firebaseio.com/"
+// import Style from '../../style.scss'
+// import MeetingList from '../SmallComponents/MeetingList.js'
+//
+// /*
+// 1. make call to ngroup for the user and get references
+// 2. make call
+// */
+// let base = Rebase.createClass(URL)
+// let refs = []
+//
+// function listenTo(path, options){
+//   let ref = base.listenTo(path, options)
+//   refs.push(ref)
+//   return ref
+// }
+//
+// class MyMeetings extends Component {
+//   constructor(props) {
+//     super(props)
+//     this.state = {
+//       lists: {},
+//       meetings: {},
+//       categories: ['Tilmeldt', 'Afmeldt', 'Ikke svaret'],
+//       current: {},
+//       currentTabIndex: 0,
+//       groups: {}
+//     }
+//   }
+//
+//   categorizeMeetings = () => {
+//     console.log('Categorizing!')
+//     var meetings = this.state.meetings
+//     var currentTabIndex = this.state.currentTabIndex
+//     this.setState({current: {}})
+//     Object.keys(meetings).forEach(group =>{
+//       Object.keys(meetings[group]).forEach(meetingId => {
+//         if (meetingId != 'groupName') {
+//           var val = meetings[group][meetingId]['participants'][this.props.uid]['status']
+//           // console.log(val);
+//           if (currentTabIndex === 0 && val === 1) {
+//             var meeting = meetings[group][meetingId]
+//             meeting['groupId'] = group
+//             meeting['groupName'] = meetings[group]['groupName'] 
+//             this.setState({
+//               current: {
+//                 [meetingId] : meeting,
+//                 ...this.state.current
+//               }
+//             })
+//           } else if (currentTabIndex === 1 && val === -1) {
+//             var meeting = meetings[group][meetingId]
+//             meeting['groupId'] = group
+//             meeting['groupName'] = meetings[group]['groupName'] 
+//             this.setState({
+//               current: {
+//                 [meetingId] : meeting,
+//                 ...this.state.current
+//               }
+//             })
+//           } else if (currentTabIndex === 2 && val === 0) {
+//             var meeting = meetings[group][meetingId]
+//             meeting['groupId'] = group
+//             meeting['groupName'] = meetings[group]['groupName']
+//             this.setState({
+//               current: {
+//                 [meetingId] : meeting,
+//                 ...this.state.current
+//               }
+//             })
+//           }
+//         }
+//       })
+//     })
+//   }
+//
+//   componentDidMount(){
+//     listenTo(`users/${this.props.uid}/ngroup`, {
+//       context: this,
+//       then(groupRefs){
+//         console.log('Recieved from ngroup');
+//         Object.keys(groupRefs).forEach(key =>{
+//           let ref = groupRefs[key];
+//           listenTo(ref, {
+//             context: this,
+//             then(s){
+//               console.log('Recieved from aktiv status');
+//               if (s === 'aktiv') {
+//                 listenTo(`networkgroups/${key}`, {
+//                   context: this,
+//                   state: 'groups',
+//                   then(group){
+//                     console.log('Recieved from group');
+//                     console.log('The key ' + key);
+//                     console.log(group);
+//                     if (group.hasOwnProperty('meetings')) {
+//                       console.log('Has meetings');
+//                       var meetings = group['meetings']
+//                       meetings['groupName'] = group['name']
+//                       //console.log(meetings)
+//                       this.setState({meetings: {
+//                         [key]: meetings,
+//                         ...this.state.meetings
+//                       }})
+//                       this.categorizeMeetings()
+//                     }
+//                   }
+//                 })
+//               }
+//             }
+//           })
+//         })
+//       }
+//     })
+//   }
+//
+//   componentWillUnmount(){
+//     refs.forEach(ref => base.removeBinding(ref))
+//     refs = []
+//   }
+//
+//   render() {
+//     return(
+//       <div>
+//         <MeetingList list={this.state.current} />
+//       </div>
+//     )
+//   }
+// }
+//
+// export default MyMeetings
 
 
 

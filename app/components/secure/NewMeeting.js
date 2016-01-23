@@ -3,7 +3,8 @@ import {findDOMNode} from 'react-dom'
 import Firebase from 'firebase'
 import Rebase from 're-base'
 import utils from '../../utils/firebaseUtils'
-import {URL} from '../../config/firebase'
+//import {URL} from '../../config/firebase'
+const URL = "https://brilliant-torch-4963.firebaseio.com/"
 
 let ref = new Firebase(URL);
 let base = Rebase.createClass(URL)

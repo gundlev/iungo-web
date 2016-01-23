@@ -3,7 +3,8 @@ import Rebase from 're-base'
 import {Input, Button, DatePicker, TimePicker, Dropdown} from 'react-toolbox'
 import utils from '../../utils/firebaseUtils'
 
-import {URL} from '../../config/firebase'
+//import {URL} from '../../config/firebase'
+const URL = "https://brilliant-torch-4963.firebaseio.com/"
 let base = Rebase.createClass(URL)
 
 class NewMeeting extends Component {
