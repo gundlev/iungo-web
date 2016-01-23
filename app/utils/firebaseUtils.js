@@ -8,6 +8,14 @@ let cachedUser = null;
 let addNewUserToFB = (newUser, {uid} = newUser) =>
   ref.child('users').child(uid).set(newUser);
 
+  function checkForAdmin(uid){
+    console.log("checking for admin status");
+    ref.child("users").child(uid).child("admin").on("value", function(snapshot) {
+      window.admin = snapshot.val();
+      console.log("admin status: " + snapshot.val());
+    })
+  }
+
 export default {
   createUser(user, cb) {
     ref.createUser(user, (err) => {
@@ -48,6 +56,8 @@ export default {
         console.log('Error on login:', err.message);
         cbOnRegister && cbOnRegister(false);
       } else {
+        console.log("user logged in!");
+        checkForAdmin(authData.uid);
         authData.email = userObj.email;
         cachedUser = authData;
         cb && cb(authData);
