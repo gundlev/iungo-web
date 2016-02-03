@@ -1,13 +1,39 @@
 import React, {Component} from 'react'
 import Firebase from 'firebase'
 import Rebase from 're-base'
-import {List} from 'react-toolbox'
+import {Tab, Tabs} from 'react-toolbox'
 import utils from '../../utils/firebaseUtils'
 import {URL} from '../../config/firebase'
 import Style from '../../style.scss'
 import MeetingList from '../SmallComponents/MeetingList'
 import MeetingDetail from '../SmallComponents/MeetingDetail'
 import NewMeeting from './NewMeeting'
+
+import groupBy from 'lodash.groupby'
+
+import Participants from '../SmallComponents/Participants'
+
+
+const MeetingAttendees = ({index, handleTabChange, participants}) => {
+    const attending = Object.keys(participants).filter(key => participants[key].status == 1).map(key => key)
+    const declined = Object.keys(participants).filter(key => participants[key].status == -1).map(key => key)
+    const unanswered = Object.keys(participants).filter(key => participants[key].status == 0).map(key => key)
+
+    return <Tabs index={index} onChange={handleTabChange.bind(this)}>
+        <Tab label="attending">
+            <Participants list={attending}/>
+        </Tab>
+        <Tab label="declined">
+            <Participants list={declined}/>
+        </Tab>
+        <Tab label="unanswered">
+            <Participants list={unanswered}/>
+        </Tab>
+    </Tabs>
+
+
+};
+
 
 class MyMeetings extends Component {
   constructor(props) {
@@ -18,12 +44,17 @@ class MyMeetings extends Component {
       categories: ['Tilmeldt', 'Afmeldt', 'Ikke svaret'],
       current: [],
       currentTabIndex: 0,
+      activeTabIdx: 0
     }
   }
 
   onMeetingSelected = (meetingId) => {
-      this.setState({selectedMeeting: meetingId})
+      this.setState({selectedMeeting: meetingId});
       console.log(this.state)
+  };
+
+  onTabChange = (activeTabIdx) => {
+      this.setState({activeTabIdx})
   };
 
   render() {
@@ -39,6 +70,7 @@ class MyMeetings extends Component {
     console.log('meetings', meetings);
 
     const meeting = meetings[this.state.selectedMeeting];
+      if(meeting) console.log("participants:1", meeting.participants)
 
     return(
       <div className={Style.masterDetail}>
@@ -47,12 +79,25 @@ class MyMeetings extends Component {
         <MeetingList list={meetings} onMeetingSelected={this.onMeetingSelected} />
         </div>
         <div className={Style.detail}>
-          <MeetingDetail id={this.state.selectedMeeting} {...meeting} />
+            {
+                !meeting
+                    ? <div> nothing selected</div>
+                    : <div>
+                        <MeetingDetail id={this.state.selectedMeeting} {...meeting} />
+                        <MeetingAttendees
+                            index={this.state.activeTabIdx}
+                            participants={meeting.participants}
+                            handleTabChange={this.onTabChange.bind(this)}
+                        />
+                    </div>
+            }
         </div>
       </div>
     )
   }
 }
+
+
 
 export default MyMeetings
 

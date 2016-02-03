@@ -14,6 +14,7 @@
     "firebase": "^2.3.2",
     "lodash.groupby": "^3.1.1",
     "lodash.isempty": "^3.0.4",
+    "lodash.partition": "^4.0.3",
     "moment": "^2.10.6",
     "normalize.css": "^3.0.3",
     "re-base": "^1.4.0",
