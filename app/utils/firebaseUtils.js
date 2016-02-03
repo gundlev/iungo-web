@@ -3,18 +3,11 @@ import Firebase from 'firebase'
 const URL = "https://brilliant-torch-4963.firebaseio.com/"
 
 let ref = new Firebase(URL);
-let cachedUser = null;
+//let cachedUser = null;
 
 let addNewUserToFB = (newUser, {uid} = newUser) =>
   ref.child('users').child(uid).set(newUser);
 
-  function checkForAdmin(uid){
-    console.log("checking for admin status");
-    ref.child("users").child(uid).child("admin").on("value", function(snapshot) {
-      window.admin = snapshot.val();
-      console.log("admin status: " + snapshot.val());
-    })
-  }
 
 export default {
   createUser(user, cb) {
@@ -57,9 +50,9 @@ export default {
         cbOnRegister && cbOnRegister(false);
       } else {
         console.log("user logged in!");
-        checkForAdmin(authData.uid);
+        //checkForAdmin(authData.uid);
         authData.email = userObj.email;
-        cachedUser = authData;
+//        cachedUser = authData;
         cb && cb(authData);
         this.onChange(authData);
         cbOnRegister && cbOnRegister(true);
@@ -67,11 +60,11 @@ export default {
     });
   },
   loggedInUser(){
-    return cachedUser || ref.getAuth() || false;
+    return ref.getAuth() || false;
   },
   logout(){
     ref.unauth();
-    cachedUser = null;
+//    cachedUser = null;
     this.onChange(false);
   },
   createNewMeetingToFB(meeting, gid) {

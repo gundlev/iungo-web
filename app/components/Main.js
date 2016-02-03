@@ -21,11 +21,23 @@ class Main extends React.Component{
     super(props);
     this.state = {
       auth: firebaseUtils.loggedInUser(),
+      user: {},
       status: {},
       groups: {}
     };
 
+    console.log("userAuth: " + JSON.stringify(this.state.auth, null, 4));
+    this.getUser()
     firebaseUtils.onChange = (loggedIn) => this.handleLogout(loggedIn);
+  }
+
+  getUser(){
+    let ref = new Firebase(URL);
+    var userAuth = ref.getAuth();
+    ref.child("users").child(userAuth.uid).on("value", (snapshot) => {
+      this.setState({user: snapshot.val()});
+      //console.log("userInfo: " + JSON.stringify(this.state.user, null, 4));
+    })
   }
 
   componentDidMount(){
