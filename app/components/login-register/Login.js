@@ -5,7 +5,7 @@ import Style from '../../style.scss'
 
 class Login extends React.Component{
   constructor(props){
-    super(props)
+    super(props);
     this.state = {
       error: false,
       email: '',
@@ -17,9 +17,9 @@ class Login extends React.Component{
     e.preventDefault();
     firebaseUtils.loginWithPW({email: this.state.email, password: this.state.password}, null, (loggedIn) =>{
       if (!loggedIn)
-        return this.setState({ error: true })
+        return this.setState({ error: true });
 
-      var { location } = this.props
+      var { location } = this.props;
 
       if (location.state && location.state.nextPathname) {
         this.props.history.replaceState(null, location.state.nextPathname)
@@ -27,12 +27,12 @@ class Login extends React.Component{
         this.props.history.replaceState(null, '/dashboard')
       }
     });
-  }
+  };
 
   handleChange = (name, value) => {
-    this.setState({...this.state, [name]: value})
+    this.setState({...this.state, [name]: value});
     console.log(event.target.value);
-  }
+  };
 
   render(){
     var errors = this.state.error ? <p> Error on Login </p> : '';

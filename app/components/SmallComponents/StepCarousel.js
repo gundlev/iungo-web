@@ -7,7 +7,7 @@ class StepCarousel extends Component{
     super(props)
   }
 
-  preset = [50, 13]
+  preset = [50, 13];
 
   render(){
     const getStyles = () => {
@@ -21,7 +21,7 @@ class StepCarousel extends Component{
             )
         }
       }
-    }
+    };
 
     return (
     <div>

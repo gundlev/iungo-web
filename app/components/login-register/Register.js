@@ -5,7 +5,7 @@ import Style from '../../style.scss'
 
 class Register extends Component{
   constructor(props){
-    super(props)
+    super(props);
     this.state = {
       error: false,
       email: '',
@@ -34,13 +34,13 @@ class Register extends Component{
           this.props.history.replaceState(null, '/dashboard')
         }
     });
-  }
+  };
 
   handleChange = (name, event) => {
     const newState = {};
     newState[`${name}`] = event.target.value;
     this.setState(newState);
-  }
+  };
 
   render(){
     var errors = this.state.error ? <p> Error on creating user </p> : '';

@@ -1,30 +1,35 @@
-import React, {Component} from 'react'
-import Firebase from 'firebase'
-import Rebase from 're-base'
-import {List, ListItem} from 'react-toolbox'
-import utils from '../../utils/firebaseUtils'
-//import {URL} from '../../config/firebase'
-const URL = "https://brilliant-torch-4963.firebaseio.com/"
+import React from 'react'
 import Style from '../../style.scss'
 
+import Time from 'react-time'
 
-class MeetingDetail extends Component {
+import {List, ListItem} from 'react-toolbox'
 
-  static propTypes = {
-    meeting: React.PropTypes.string
-  }
+const Participants = ({participants}) => participants
+    ?
+    <List>
+    <p>Participants:</p>
+        { Object.keys(participants).map((id) =>
+            <ListItem
+                key={id}
+                avatar='https://dl.dropboxusercontent.com/u/2247264/assets/m.jpg'
+                caption={id}
+                legend={id}
+            />
+        )}
+    </List>
+    :
+    <div>No participants</div>
+;
 
-  constructor(props) {
-    super(props)
-  }
-
-  render() {
-    return(
-      <div>
-        {this.props.meeting}
-      </div>
-    )
-  }
-}
-
-export default MeetingDetail
+export default ({id, title, address, text, endTimestamp, startTimestamp, participants}) => <div>
+  <h3>{title}</h3>
+  <p>{address}</p>
+    <Time value={new Date(startTimestamp*1000)} format={"DD/MM/YYYY"}/>
+    <span>  </span>
+    <Time value={new Date(startTimestamp*1000)} format={"HH:mm"}/>
+    <span> - </span>
+    <Time value={new Date(endTimestamp*1000)} format={"HH:mm"}/>
+    <p>{text}</p>
+    <Participants participants={participants}/>
+</div>

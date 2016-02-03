@@ -4,10 +4,10 @@ import Firebase from 'firebase'
 import Rebase from 're-base'
 import utils from '../../utils/firebaseUtils'
 //import {URL} from '../../config/firebase'
-const URL = "https://brilliant-torch-4963.firebaseio.com/"
+const URL = "https://brilliant-torch-4963.firebaseio.com/";
 
 let ref = new Firebase(URL);
-let base = Rebase.createClass(URL)
+let base = Rebase.createClass(URL);
 var initialDate = new Date();
 
 import {Button, Dialog} from 'react-toolbox'
@@ -20,44 +20,44 @@ class NewMeeting extends Component {
     visible: false,
     gid: 'forsam', //from props
     groupName: 'Forsam', //from props
-  }
+  };
 
   onClick = () => {
     this.setState({
       visible: true
     })
-  }
+  };
 
   closeModal = () => {
     this.setState({
       visible: false
     })
-  }
+  };
 
   onOverlayClick = () => {
     this.setState({
       visible: false
     })
-  }
+  };
 
   handleSubmit = (formData) => {
-    console.log("submitted!")
+    console.log("submitted!");
 
-    console.log("formData", formData)
+    console.log("formData", formData);
 
     const {
       title, address, agenda, date, startTime, endTime, notification,
-    } = formData
+    } = formData;
 
-    var path = 'networkgroups/' + this.state.gid + '/members'
+    var path = 'networkgroups/' + this.state.gid + '/members';
     console.log(path);
     var result = base.fetch(path, {
       context: this,
       then(data){
-        var part = {}
+        var part = {};
         Object.keys(data).forEach(key => {
           part[key] = {status: 0}
-        })
+        });
         console.log(part);
 
 
@@ -80,7 +80,7 @@ class NewMeeting extends Component {
             startTime.getSeconds()).getTime()/1000,
           participants: part,
           text: agenda
-        }, this.state.gid, this.state.groupName, notification, data)
+        }, this.state.gid, this.state.groupName, notification, data);
 
         /*
         TODO: Check if the meeting was successfully created
@@ -90,7 +90,7 @@ class NewMeeting extends Component {
 
       }
     })
-  }
+  };
 
   createNewMeetingToFB = (meeting, gid, groupName, notification, members) =>{
     var meetingRef = ref.child('networkgroups').child(gid).child('meetings').push(meeting, function(error) {
@@ -114,10 +114,10 @@ class NewMeeting extends Component {
         })
       }
       }
-    })
+    });
     console.log("Done");
     this.closeModal()
-  }
+  };
 
   render(){
     return (

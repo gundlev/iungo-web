@@ -1,104 +1,58 @@
 import React, {Component} from 'react'
-import Rebase from 're-base'
 import {TransitionMotion, spring, presets} from 'react-motion'
-
-//import {URL} from '../../config/firebase'
-const URL = "https://brilliant-torch-4963.firebaseio.com/"
-let base = Rebase.createClass(URL)
 
 import {Tab, Tabs, Button, Card, CardTitle, CardMedia, CardText, CardActions, ProgressBar} from 'react-toolbox';
 import Time from 'react-time'
 
 import groupBy from 'lodash.groupby'
+import isempty from 'lodash.isempty'
 
 const STATUS = {
   aktiv     : 'active',
   inaktiv   : 'inactive',
   invitered : 'invited'
-}, statusToLabel = (status) => STATUS[status]
-
-let refs = []
-
-function listenTo(path, options){
-  let ref = base.listenTo(path, options)
-  refs.push(ref)
-  return ref
-}
+}, statusToLabel = (status) => STATUS[status];
 
 class Dashboard extends Component{
   constructor(props){
-    super(props)
+    super(props);
 
     this.state = {
-      groups: {},
-      status: {},
       activeTabGroups: 0,
       activeTabMeetings: 0
     }
   }
 
-  componentDidMount(){
-    listenTo(`users/${this.props.uid}/ngroup`, {
-    context: this,
-    then(groupRefs){
-      Object.keys(groupRefs).forEach(key =>{
-        let ref = groupRefs[key];
-        listenTo(ref, {
-          context: this,
-          then(s){
-            this.setState({status: {
-              [key]: s,
-              ...this.state.status
-            }})
-            listenTo(`networkgroups/${key}`, {
-              context: this,
-              then(group){
-                this.setState({groups: {
-                  [key]: group,
-                  ...this.state.groups
-                }})
-              }
-            })
-          }
-        })
-      })
-    }
-    })
-  }
-
-  componentWillUnmount(){
-    refs.forEach(ref => base.removeBinding(ref))
-    refs = []
-  }
-
   handleGroupTabChange = (activeTabGroups) => {
     this.setState({activeTabGroups})
-  }
+  };
 
   handleMeetingTabChange = (activeTabMeetings) => {
     this.setState({activeTabMeetings})
-  }
+  };
 
   render(){
-    const groupTabs = deriveGroupTabs(this.state.status, this.state.groups)
+    const groupTabs = (isempty(this.props.status) || isempty(this.props.groups))
+      ? {}
+      : deriveGroupTabs(this.props.status, this.props.groups);
 
-    const meetings = Object.keys(this.state.status)
-      .filter(status => this.state.status[status] === "aktiv")
-      .map(key => this.state.groups[key])
+    const meetings = Object.keys(this.props.status)
+      .filter(status => this.props.status[status] === "aktiv")
+      .map(key => this.props.groups[key])
       .reduce((acc, group) => group
           ? {
             ...group.meetings, ...acc
           } : acc
-      , {})
+      , {});
 
-    const partition = groupBy(Object.keys(meetings), key => ~~(Date.now()/1000) >= meetings[key].startTimestamp ? "past" : "future")
+    const partition = groupBy(Object.keys(meetings), key => ~~(Date.now()/1000) >= meetings[key].startTimestamp ? "past" : "future");
 
     const meetingTabs = Object.keys(partition).reduce((acc, key) =>
     Object.assign(acc, {[key]: partition[key].map(key => <MeetingCard meeting={meetings[key]}/>).concat(acc[key])}),
     {
       "future": [],
       "past": []
-    })
+    });
 
     return (
       <div>
@@ -122,11 +76,11 @@ class Dashboard extends Component{
 function deriveGroupTabs(status, groups){
   return Object.keys(STATUS).reduce((acc, s) => {
     const ids_with_status = Object.keys(status)
-      .filter(ss => status && status[ss] == s)
+      .filter(ss => status && status[ss] == s);
 
     const groups_with_status = (groups) => Object.keys(groups)
       .filter(key => ids_with_status.indexOf(key) > -1)
-      .map(key => groups[key])
+      .map(key => groups[key]);
 
     return Object.keys(groups).length
       ? Object.assign(acc, {
@@ -166,7 +120,7 @@ return meeting
 
 function GroupCard({/*id,*/ group}){
 
-  const getCardDescription = ({meetings={}, members={}}) => `Meetings: ${Object.keys(meetings).length}  |  Members: ${Object.keys(members).length}`
+  const getCardDescription = ({meetings={}, members={}}) => `Meetings: ${Object.keys(meetings).length}  |  Members: ${Object.keys(members).length}`;
 
   return group
     ? <Card
@@ -184,7 +138,7 @@ function GroupCard({/*id,*/ group}){
     : <ProgressBar type="circular" mode="indeterminate" />
 }
 
-let EmptyGroupCard = ({type}) => <div> no {type} groups</div>
+let EmptyGroupCard = ({type}) => <div> no {type} groups</div>;
 
 let ItemsRow = ({labels, tabs, activeTab, handleTabChange}) => {
   const style = {
@@ -236,14 +190,14 @@ let ItemsRow = ({labels, tabs, activeTab, handleTabChange}) => {
   cardStyle = ({opacity, y, scale}) => ({
     opacity,
     transform: `translate(0px, ${y}px) scale(${scale})`
-  })
+  });
 
     return <Tabs index={activeTab} onChange={handleTabChange}>
         {
           labels.map(label => {
             if(!tabs[label]) return (
               <Tab label={label}><ProgressBar type="circular" mode="indeterminate" /></Tab>
-            )
+            );
 
             return <Tab label={label}>
               { <div style={style}>
@@ -265,6 +219,6 @@ let ItemsRow = ({labels, tabs, activeTab, handleTabChange}) => {
           })
         }
       </Tabs>
-}
+};
 
 export default Dashboard

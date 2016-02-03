@@ -2,9 +2,7 @@ import React, {Component} from 'react'
 import Firebase from 'firebase'
 import Rebase from 're-base'
 import {List, ListItem} from 'react-toolbox'
-import utils from '../../utils/firebaseUtils'
-//import {URL} from '../../config/firebase'
-const URL = "https://brilliant-torch-4963.firebaseio.com/"
+
 import Style from '../../style.scss'
 
 
@@ -12,28 +10,27 @@ class MeetingList extends Component {
 
   static propTypes = {
     list: React.PropTypes.object
-  }
-
-  constructor(props) {
-    super(props)
-  }
+  };
 
   render() {
     return(
       <div>
         <List selectable>
-          {this.props.list.map(meeting => {
-            var now = Date.now()
-            console.log(now)
-            if (meeting['startTimestamp'] >= now.toString()) {
+          {Object.keys(this.props.list).map(idx => {
+          const meeting = this.props.list[idx];
+          //const now = Date.now();
+
+            /*
+            if (meeting['startTimestamp'] >= now) {
 
             }
+            */
               return (<ListItem
                 selectable={true}
-                key={meeting['id']}
+                key={idx}
                 caption={meeting['title']}
                 legend={meeting['groupName'] + ' - ' + meeting['startTimestamp']}
-                onClick={_ => this.props.onMeetingSelected(meeting['id'])}
+                onClick={_ => this.props.onMeetingSelected(idx)}
               /> )}
           )}
         </List>

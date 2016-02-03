@@ -1,17 +1,66 @@
 import React from 'react'
 import {Link} from 'react-router'
+import Rebase from 're-base'
 import firebaseUtils from '../utils/firebaseUtils'
 import {AppBar, Navigation} from 'react-toolbox'
 import Style from '../style.scss'
 
+//import {URL} from '../../config/firebase'
+const URL = "https://brilliant-torch-4963.firebaseio.com/";
+let base = Rebase.createClass(URL);
+let refs = [];
+
+function listenTo(path, options){
+  let ref = base.listenTo(path, options);
+  refs.push(ref);
+  return ref
+}
+
 class Main extends React.Component{
   constructor(props){
-    super(props)
+    super(props);
     this.state = {
-      auth: firebaseUtils.loggedInUser()
-    }
+      auth: firebaseUtils.loggedInUser(),
+      status: {},
+      groups: {}
+    };
 
     firebaseUtils.onChange = (loggedIn) => this.handleLogout(loggedIn);
+  }
+
+  componentDidMount(){
+    if(this.state.auth)
+    listenTo(`users/${this.state.auth.uid}/ngroup`, {
+    context: this,
+    then(groupRefs){
+      Object.keys(groupRefs).forEach(key =>{
+        let ref = groupRefs[key];
+        listenTo(ref, {
+          context: this,
+          then(s){
+            this.setState({status: {
+              [key]: s,
+              ...this.state.status
+            }});
+            listenTo(`networkgroups/${key}`, {
+              context: this,
+              then(group){
+                this.setState({groups: {
+                  [key]: group,
+                  ...this.state.groups
+                }})
+              }
+            })
+          }
+        })
+      })
+    }
+    })
+  }
+
+  componentWillUnmount(){
+    refs.forEach(ref => base.removeBinding(ref));
+    refs = []
   }
 
   handleLogout(loggedIn){
@@ -21,7 +70,7 @@ class Main extends React.Component{
   }
 
   render(){
-    var links = []
+    var links = [];
     if (this.state.auth) {
       links = [
         {href: "/", label: "Home"},
@@ -47,9 +96,11 @@ class Main extends React.Component{
 
         <div style={{padding: '30px'}}>
           <div>
-            {React.cloneElement(this.props.children, {
-             uid: this.state.auth ? this.state.auth.uid : null
-           })}
+          {React.cloneElement(this.props.children, {
+//          uid: this.state.auth ? this.state.auth.uid : null,
+          groups: this.state.groups,
+          status: this.state.status
+          })}
           </div>
         </div>
       </span>

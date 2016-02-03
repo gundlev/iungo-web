@@ -45,11 +45,11 @@ class MeetingEditor extends Component {
     }
   ],
     current: 0
-  }
+  };
 
   handleChange = (name, value) => {
     this.setState({...this.state, [name]: value});
-  }
+  };
 
   render() {
 
@@ -59,7 +59,7 @@ class MeetingEditor extends Component {
           x: spring(0, preset),
         }
       }
-    }
+    };
 
     const setFormData = (b) => {
       this.setState(
@@ -67,7 +67,7 @@ class MeetingEditor extends Component {
           forms: {[this.state.current]: {data: {$set: b}}}
         })
       )
-    }
+    };
 
     const handleSubmit = () => {
       this.props.handleFormSubmit(
@@ -75,9 +75,9 @@ class MeetingEditor extends Component {
           return {...form.data, ...acc}
         }, ({}))
       )
-    }
+    };
 
-    const formValid = !isEmpty(this.state.forms[this.state.current].data)
+    const formValid = !isEmpty(this.state.forms[this.state.current].data);
 
     return (
       <StepCarousel
