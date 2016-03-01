@@ -18,8 +18,8 @@ class NewMeeting extends Component {
 
   state = {
     visible: false,
-    gid: 'forsam', //from props
-    groupName: 'Forsam', //from props
+    gid: 'iungo', //from props
+    groupName: 'IUNGO', //from props
   };
 
   onClick = () => {
