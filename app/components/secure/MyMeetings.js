@@ -8,6 +8,7 @@ import Style from '../../style.scss'
 import MeetingList from '../SmallComponents/MeetingList'
 import MeetingDetail from '../SmallComponents/MeetingDetail'
 import NewMeeting from './NewMeeting'
+import NewNotification from './NewNotification'
 
 import groupBy from 'lodash.groupby'
 
@@ -76,13 +77,14 @@ class MyMeetings extends Component {
       <div className={Style.masterDetail}>
         <div className={Style.master}>
           <NewMeeting />
-        <MeetingList list={meetings} onMeetingSelected={this.onMeetingSelected} />
+          <MeetingList list={meetings} onMeetingSelected={this.onMeetingSelected} />
         </div>
         <div className={Style.detail}>
             {
                 !meeting
                     ? <div> nothing selected</div>
                     : <div>
+                        <NewNotification members={meeting.participants} meetingId={this.state.selectedMeeting}/>
                         <MeetingDetail id={this.state.selectedMeeting} {...meeting} />
                         <MeetingAttendees
                             index={this.state.activeTabIdx}
