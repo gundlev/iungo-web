@@ -10,9 +10,16 @@ let ref = new Firebase(URL);
 let base = Rebase.createClass(URL);
 var initialDate = new Date();
 
-import {Button, Dialog} from 'react-toolbox'
+import {Button, Dialog, Dropdown} from 'react-toolbox'
 
 import MeetingEditor from '../SmallComponents/MeetingEditor'
+
+// To be deleted when the group dropdown is no longer in effect.
+const groups = [
+  {value: 0, gid: '', label: ''},
+  {value: 1, gid: 'iungo', label:'IUNGO'},
+  {value: 2, gid: 'forsam', label: 'ForSam'}
+]
 
 class NewMeeting extends Component {
 
@@ -20,6 +27,7 @@ class NewMeeting extends Component {
     visible: false,
     gid: 'iungo', //from props
     groupName: 'IUNGO', //from props
+    value: 0
   };
 
   onClick = () => {
@@ -46,10 +54,12 @@ class NewMeeting extends Component {
     console.log("formData", formData);
 
     const {
-      title, address, agenda, date, startTime, endTime, notification,
+      title, address, agenda, date, startTime, endTime, notification, value
     } = formData;
 
-    var path = 'networkgroups/' + this.state.gid + '/members';
+    var path = 'networkgroups/' + groups[value]['gid'] + '/members';
+
+    console.log(groups[value]['label']);
     console.log(path);
     var result = base.fetch(path, {
       context: this,
@@ -59,7 +69,6 @@ class NewMeeting extends Component {
           part[key] = {status: 0}
         });
         console.log(part);
-
 
         this.createNewMeetingToFB({
           title,
@@ -80,7 +89,7 @@ class NewMeeting extends Component {
             startTime.getSeconds()).getTime()/1000,
           participants: part,
           text: agenda
-        }, this.state.gid, this.state.groupName, notification, data);
+        }, groups[value]['gid'], groups[value]['label'], notification, data);
 
         /*
         TODO: Check if the meeting was successfully created
@@ -121,15 +130,16 @@ class NewMeeting extends Component {
 
   render(){
     return (
-  <div>
-    <Dialog
-      active={this.state.visible}
-      onOverlayClick={this.onOverlayClick}>
-      <h4 className="headlineStyle">Create new meeting</h4>
-    <MeetingEditor handleFormSubmit={this.handleSubmit.bind(this)}/>
-    </Dialog>
-    <Button label="New meeting" onClick={this.onClick} raised primary/>
-  </div>)
+      <div>
+        <Dialog
+          active={this.state.visible}
+          onOverlayClick={this.onOverlayClick}>
+          <h4 className="headlineStyle">Create new meeting</h4>
+        <MeetingEditor handleFormSubmit={this.handleSubmit.bind(this)}/>
+        </Dialog>
+        <Button label="New meeting" onClick={this.onClick} raised primary/>
+      </div>
+    )
   }
 }
 

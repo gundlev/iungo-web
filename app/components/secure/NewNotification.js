@@ -3,12 +3,27 @@ import {findDOMNode} from 'react-dom'
 import Firebase from 'firebase'
 import Rebase from 're-base'
 import utils from '../../utils/firebaseUtils'
-import {Button, Dialog, Input} from 'react-toolbox'
+import {Button, Dialog, Input, Dropdown} from 'react-toolbox'
 
 //import {URL} from '../../config/firebase'
 const URL = "https://brilliant-torch-4963.firebaseio.com/"
 let base = Rebase.createClass(URL)
 let ref = new Firebase(URL);
+
+// const groups = [
+//   {value: {gid: 'iungo', name: 'IUNGO'}, label:'IUNGO'},
+//   {value: {gid: 'forsam', name: 'ForSam'}, label: 'ForSam'}
+// ]
+// const groups = [
+//   {value: 'iungo', label:'IUNGO'},
+//   {value: 'forsam', label: 'ForSam'}
+// ]
+
+const groups = [
+  {value: 0, gid: '', label: ''},
+  {value: 1, gid: 'iungo', label:'IUNGO'},
+  {value: 2, gid: 'forsam', label: 'ForSam'}
+]
 
 class NewNotification extends Component {
   constructor(props) {
@@ -16,7 +31,8 @@ class NewNotification extends Component {
     this.state = {
       visible: false,
       gid: 'iungo', //from props
-      groupName: 'iungo', //from props
+      groupName: '', //from props
+      value: 0,
       text: ""
     }
   }
@@ -42,23 +58,36 @@ class NewNotification extends Component {
 
   handleChange = (name, value) => {
     this.setState({...this.state, [name]: value});
-    console.log(event.target.value);
+  };
+
+  handleDropdown = (value) => {
+    console.log('handles');
+    console.log(value['gid']);
+    console.log(value['name']);
+    this.setState({value: value})
+    this.setState({gid: groups[value]['gid']})
+    this.setState({groupName: groups[value]['label']})
   };
 
   sendNotification = () => {
-    Object.keys(this.props.members).forEach(key => {
-      ref.child('notifications').push({
-        from: this.state.gid,
-        fromName: this.state.groupName,
-        read: false,
-        to: key,
-        title: this.state.text,
-        type: 'reminder',
-        reference: "/networkgroups/" + this.state.gid + "/meetings/" + this.props.meetingId,
-        timestamp: new Date().getTime()
+    if (this.state.value !== 0) {
+      console.log("Can send notification");
+      Object.keys(this.props.members).forEach(key => {
+        ref.child('notifications').push({
+          from: this.state.gid,
+          fromName: this.state.groupName,
+          read: false,
+          to: key,
+          title: this.state.text,
+          type: 'reminder',
+          reference: "/networkgroups/" + this.state.gid + "/meetings/" + this.props.meetingId,
+          timestamp: new Date().getTime()
+        })
       })
-    })
-    this.closeModal()
+      this.closeModal()
+    } else {
+      console.log("Please choose a group");
+    }
   }
 
   render() {
@@ -68,6 +97,7 @@ class NewNotification extends Component {
           active={this.state.visible}
           onOverlayClick={this.onOverlayClick}>
           <h4 className="headlineStyle">Send Reminder Notification</h4>
+          <Dropdown auto onChange={this.handleDropdown.bind()} source={groups} label={'Group'} value={this.state.value}/>
           <Input name="text" type='text' label='Text' value={this.state.text} onChange={this.handleChange.bind(this, 'text')} />
           <Button label="Send" onClick={this.sendNotification} raised primary/>
         </Dialog>

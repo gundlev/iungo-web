@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {findDOMNode} from 'react-dom'
-import {Input, Button, DatePicker, Switch, TimePicker} from 'react-toolbox'
+import {Input, Button, DatePicker, Switch, TimePicker, Dropdown} from 'react-toolbox'
 
 import autobind from 'autobind-decorator'
 import Style from '../../style.scss'
@@ -14,6 +14,12 @@ import isEmpty from 'lodash.isempty'
 
 import update from 'react-addons-update'
 
+const groups = [
+  {value: 0, gid: '', label: ''},
+  {value: 1, gid: 'iungo', label:'IUNGO'},
+  {value: 2, gid: 'forsam', label: 'ForSam'}
+]
+
 class MeetingEditor extends Component {
   //TODO can be abstracted further. form state should live inside forms
   state = {
@@ -22,6 +28,9 @@ class MeetingEditor extends Component {
     address: '',
     text: '',
     agenda: '',
+    // gid: '',
+    // groupName: '',
+    value: 0,
     notification: false,
     forms: [
     {
@@ -30,7 +39,8 @@ class MeetingEditor extends Component {
         address: Joi.string().required().label('Address'),
         date: Joi.date().min(new Date()).required().label('Date'),
         startTime: Joi.date().required().label('Start Time'),
-        endTime: Joi.date().required().label('End Time')
+        endTime: Joi.date().required().label('End Time'),
+        value: Joi.number().min(1).required()
       }),
       data: {},
       nextIcon: 'arrow_forward'
@@ -127,6 +137,7 @@ class MeetingEditor extends Component {
           <DatePicker key='date' value={this.state.date} placeholder="Dato"  label="Date" minDate={new Date()} />
           <TimePicker key='startTime' value={this.state.startTime} placeholder="Start Tid" label="Start Time" />
           <TimePicker key='endTime' value={this.state.endTime} placeholder="Slut Tid" label="End Time" />
+          <Dropdown auto key="value" source={groups} label={'Group'} value={this.state.value}/>
         </ValidationForm>
 
         <ValidationForm
@@ -157,3 +168,8 @@ class MeetingEditor extends Component {
 }
 
 export default MeetingEditor
+
+
+// Comments on group picker. The Dropdown sets a value corresponding to the group chosen.
+// It is then found in a simular array in NewMeeting and the values from there are used to create meeting.
+// It is done in that way to be easy to remove again.
