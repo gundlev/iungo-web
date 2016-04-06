@@ -89,6 +89,7 @@ class Main extends React.Component{
       links = [
         {href: "/", label: "Home"},
         {href: "/dashboard", label: "Dashboard"},
+        {href: "/meetings", label: "Meetings"},
         {href: "/logout", label: "Logout"}
       ]
     } else {

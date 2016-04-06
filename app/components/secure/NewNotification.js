@@ -62,8 +62,6 @@ class NewNotification extends Component {
 
   handleDropdown = (value) => {
     console.log('handles');
-    console.log(value['gid']);
-    console.log(value['name']);
     this.setState({value: value})
     this.setState({gid: groups[value]['gid']})
     this.setState({groupName: groups[value]['label']})

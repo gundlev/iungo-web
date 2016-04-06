@@ -1,0 +1,10 @@
+{
+  "firebase": "brilliant-torch-4963",
+  "public": ".",
+  "ignore": [
+    "firebase.json",
+    "**/app/",
+    "**/.*",
+    "**/node_modules/**"
+  ]
+}
