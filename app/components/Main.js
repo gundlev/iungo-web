@@ -90,6 +90,7 @@ class Main extends React.Component{
         {href: "/", label: "Home"},
         {href: "/dashboard", label: "Dashboard"},
         {href: "/meetings", label: "Meetings"},
+        {href: "/members", label: "Members"},
         {href: "/logout", label: "Logout"}
       ]
     } else {

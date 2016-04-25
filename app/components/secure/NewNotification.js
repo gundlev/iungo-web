@@ -6,8 +6,8 @@ import utils from '../../utils/firebaseUtils'
 import {Button, Dialog, Input, Dropdown} from 'react-toolbox'
 
 //import {URL} from '../../config/firebase'
-const URL = "https://brilliant-torch-4963.firebaseio.com/"
-let base = Rebase.createClass(URL)
+const URL = "https://brilliant-torch-4963.firebaseio.com/";
+let base = Rebase.createClass(URL);
 let ref = new Firebase(URL);
 
 // const groups = [
@@ -23,11 +23,11 @@ const groups = [
   {value: 0, gid: '', label: ''},
   {value: 1, gid: 'iungo', label:'IUNGO'},
   {value: 2, gid: 'forsam', label: 'ForSam'}
-]
+];
 
 class NewNotification extends Component {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
       visible: false,
       gid: 'iungo', //from props
@@ -62,8 +62,8 @@ class NewNotification extends Component {
 
   handleDropdown = (value) => {
     console.log('handles');
-    this.setState({value: value})
-    this.setState({gid: groups[value]['gid']})
+    this.setState({value: value});
+    this.setState({gid: groups[value]['gid']});
     this.setState({groupName: groups[value]['label']})
   };
 
@@ -81,12 +81,12 @@ class NewNotification extends Component {
           reference: "/networkgroups/" + this.state.gid + "/meetings/" + this.props.meetingId,
           timestamp: new Date().getTime()
         })
-      })
+      });
       this.closeModal()
     } else {
       console.log("Please choose a group");
     }
-  }
+  };
 
   render() {
     return (
@@ -101,22 +101,7 @@ class NewNotification extends Component {
         </Dialog>
         <Button label="New Reminder" onClick={this.onClick} raised primary/>
       </div>
-    )
-    // return(
-    //   <div className="col-md-6 col-md-offset-3">
-    //     <h4 className="headlineStyle">Create new meeting</h4>
-    //     <form onSubmit={this.handleSubmit}>
-    //       <Input name="title" type='text' label='Title' value={this.state.title} onChange={this.handleChange.bind(this, 'title')}/>
-    //       <Input name="text" type='text' label='Text' value={this.state.text} onChange={this.handleChange.bind(this, 'text')} />
-    //       <Input name="address" type='text' label='Address' value={this.state.address} onChange={this.handleChange.bind(this, 'address')} />
-    //       <DatePicker value={this.state.date} placeholder="Dato" name='date' onChange={this.handleDateChange.bind(this)}/>
-    //       <TimePicker value={this.state.startTime} placeholder="Start Tid" label="Start Time" onChange={this.handleTimeChange.bind(this, 'startTime')}/>
-    //       <TimePicker value={this.state.endTime} placeholder="Slut Tid" label="End Time" onChange={this.handleTimeChange.bind(this, 'endTime')}/>
-    //       <Button label="submit" raised primary/>
-    //     </form>
-    //
-    //   </div>
-    // )
+    );
   }
 
 }

@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import {TransitionMotion, spring, presets} from 'react-motion'
 
 import {Tab, Tabs, Button, Card, CardTitle, CardMedia, CardText, CardActions, ProgressBar} from 'react-toolbox';
+
 import Time from 'react-time'
 
 import groupBy from 'lodash.groupby'
@@ -37,7 +38,7 @@ class Dashboard extends Component{
       : deriveGroupTabs(this.props.status, this.props.groups);
 
     const meetings = Object.keys(this.props.status)
-      .filter(status => this.props.status[status] === "aktiv")
+      .filter(status => this.props.status[status] === "aktiv" || this.props.status[status] === "admin")
       .map(key => this.props.groups[key])
       .reduce((acc, group) => group
           ? {
@@ -45,10 +46,13 @@ class Dashboard extends Component{
           } : acc
       , {});
 
-    const partition = groupBy(Object.keys(meetings), key => ~~(Date.now()/1000) >= meetings[key].startTimestamp ? "past" : "future");
+    const partition = groupBy(Object.keys(meetings), key => 
+        ~~(Date.now()/1000) >= meetings[key].startTimestamp ? "past" : "future");
 
     const meetingTabs = Object.keys(partition).reduce((acc, key) =>
-    Object.assign(acc, {[key]: partition[key].map(key => <MeetingCard meeting={meetings[key]}/>).concat(acc[key])}),
+    Object.assign(acc, {[key]: partition[key].map(key => 
+        <MeetingCard meeting={meetings[key]}/>
+    ).concat(acc[key])}),
     {
       "future": [],
       "past": []

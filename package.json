@@ -18,17 +18,20 @@
     "lodash.partition": "^4.0.3",
     "moment": "^2.10.6",
     "normalize.css": "^3.0.3",
+    "papaparse": "^4.1.2",
     "re-base": "^1.4.0",
     "react": "^0.14.3",
     "react-addons-css-transition-group": "^0.14.3",
     "react-addons-update": "^0.14.3",
     "react-dimensions": "^1.0.1",
     "react-dom": "^0.14.3",
+    "react-dropzone": "^3.4.0",
     "react-motion": "^0.3.1",
     "react-router": "^1.0.3",
     "react-time": "^4.0.0",
-    "react-toolbox": "0.14.1",
-    "react-validation-decorator": "^0.3.0"
+    "react-toolbox": "^0.16.2",
+    "react-validation-decorator": "^0.3.0",
+    "validator": "^5.2.0"
   },
   "devDependencies": {
     "autoprefixer": "^6.2.2",

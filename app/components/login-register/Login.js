@@ -31,7 +31,6 @@ class Login extends React.Component{
 
   handleChange = (name, value) => {
     this.setState({...this.state, [name]: value});
-    console.log(event.target.value);
   };
 
   render(){
