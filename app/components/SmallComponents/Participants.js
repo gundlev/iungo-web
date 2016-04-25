@@ -46,7 +46,7 @@ class Participant extends React.Component{
             return <ListItem
                 key={id}
                 avatar='https://dl.dropboxusercontent.com/u/2247264/assets/m.jpg'
-                caption={"Loading... " + id}
+                caption={"Loading... "}
             />
         }
 

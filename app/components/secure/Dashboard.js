@@ -2,7 +2,6 @@ import React, {Component} from 'react'
 import {TransitionMotion, spring, presets} from 'react-motion'
 
 import {Tab, Tabs, Button, Card, CardTitle, CardMedia, CardText, CardActions, ProgressBar} from 'react-toolbox';
-
 import Time from 'react-time'
 
 import groupBy from 'lodash.groupby'

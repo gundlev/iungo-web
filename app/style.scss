@@ -65,11 +65,16 @@ $dialog-translate-y: 4 * $unit;
 }
 
 .master {
-  flex-basis: 250px;
+  flex-basis: 350px;
   //flex-grow: 1;
 }
 
 .detail {
-  flex-basis: auto;
+  flex-basis: 80%;
   //flex-grow: 3;
+}
+
+.detailRight {
+  flex-basis: 250px;
+  justify-content: flex-end;
 }

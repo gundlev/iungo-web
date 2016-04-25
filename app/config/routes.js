@@ -9,6 +9,7 @@ import Home from "../components/Home"
 import NewMeeting from "../components/secure/NewMeeting"
 import MyMeetings from "../components/secure/MyMeetings"
 import Members from "../components/secure/Members"
+import Groups from "../components/secure/Groups"
 
 import requireAuth from '../utils/authenticated'
 
@@ -22,5 +23,6 @@ export default
   <Route path="register" component={Register} />
   <Route path="dashboard" component={Dashboard} onEnter={requireAuth}/>
   <Route path="members" component={Members} onEnter={requireAuth}/>
+  <Route path="groups" component={Groups} onEnter={requireAuth}/>
   <Route path="*" component={Home} />
 </Route>

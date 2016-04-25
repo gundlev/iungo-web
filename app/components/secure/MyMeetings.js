@@ -83,14 +83,18 @@ class MyMeetings extends Component {
             {
                 !meeting
                     ? <div> nothing selected</div>
-                    : <div>
-                        <NewNotification members={meeting.participants} meetingId={this.state.selectedMeeting}/>
-                        <MeetingDetail id={this.state.selectedMeeting} {...meeting} />
-                        <MeetingAttendees
-                            index={this.state.activeTabIdx}
-                            participants={meeting.participants}
-                            handleTabChange={this.onTabChange.bind(this)}
-                        />
+                    : <div className={Style.masterDetail}>
+                        <div className={Style.detail}>
+                            <NewNotification members={meeting.participants} meetingId={this.state.selectedMeeting}/>
+                            <MeetingDetail id={this.state.selectedMeeting} {...meeting} />
+                        </div>
+                        <div className={Style.master}>
+                            <MeetingAttendees
+                                index={this.state.activeTabIdx}
+                                participants={meeting.participants}
+                                handleTabChange={this.onTabChange.bind(this)}
+                            />
+                        </div>
                     </div>
             }
         </div>
