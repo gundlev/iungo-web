@@ -42,16 +42,7 @@ class NewMeeting extends Component {
     })
   };
 
-  onOverlayClick = () => {
-    this.setState({
-      visible: false
-    })
-  };
-
   handleSubmit = (formData) => {
-    console.log("submitted!");
-
-    console.log("formData", formData);
 
     const {
       title, address, agenda, date, startTime, endTime, notification, value
@@ -59,9 +50,7 @@ class NewMeeting extends Component {
 
     var path = 'networkgroups/' + groups[value]['gid'] + '/members';
 
-    console.log(groups[value]['label']);
-    console.log(path);
-    var result = base.fetch(path, {
+    base.fetch(path, {
       context: this,
       then(data){
         var part = {};
@@ -133,9 +122,9 @@ class NewMeeting extends Component {
       <div>
         <Dialog
           active={this.state.visible}
-          onOverlayClick={this.onOverlayClick}>
+          onOverlayClick={this.closeModal}>
           <h4 className="headlineStyle">Create new meeting</h4>
-        <MeetingEditor handleFormSubmit={this.handleSubmit.bind(this)}/>
+        <MeetingEditor handleFormSubmit={this.handleSubmit}/>
         </Dialog>
         <Button label="New meeting" onClick={this.onClick} raised primary/>
       </div>

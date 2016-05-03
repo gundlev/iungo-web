@@ -4,50 +4,39 @@ import Rebase from 're-base'
 import {List, ListItem} from 'react-toolbox'
 
 import Style from '../../style.scss'
+import Time from 'react-time'
 
+const meetingLegend = ({startTimestamp, groupName}) =>
+    <p>
+        {groupName} <span> - </span>
+    <Time value={new Date(startTimestamp*1000)} format="DD/MM/YYYY HH:mm"/>
+</p>;
 
-class MeetingList extends Component {
+const sortMap = (map, comparator) =>
+    Object.keys(map).map(key => ({
+        key, ...map[key]
+    })).sort(comparator);
 
-  static propTypes = {
-    list: React.PropTypes.object
-  };
-
-  render() {
-    return(
+const MeetingList = ({list, onMeetingSelected, comparator}) =>
       <div>
         <List selectable>
-          {Object.keys(this.props.list).map(idx => {
-          const meeting = this.props.list[idx];
-          //const now = Date.now();
-
-            /*
-            if (meeting['startTimestamp'] >= now) {
-
-            }
-            */
-              return (<ListItem
+          {sortMap(list, comparator).map(meeting => <ListItem
                 selectable={true}
-                key={idx}
-                caption={meeting['title']}
-                legend={meeting['groupName'] + ' - ' + meeting['startTimestamp']}
-                onClick={_ => this.props.onMeetingSelected(idx)}
-              /> )}
+                key={meeting.key}
+                itemContent={
+                    <div style={{paddingTop: 7, paddingBottom: 7}}>
+                        <h6>{meeting['title']}</h6>
+                        {meetingLegend(meeting)}
+                    </div>
+                }
+                onClick={_ => onMeetingSelected(meeting.key)}
+              />
           )}
         </List>
-      </div>
-    )
-  }
-}
+      </div>;
+
+MeetingList.propTypes = {
+    list: React.PropTypes.object.isRequired
+};
 
 export default MeetingList
-
-{/*<div>
-  <List selectable>
-    {Object.keys(this.props.list).forEach(meetingId => {
-      <ListItem
-        caption={this.props.list[meetingId]['title']}
-        legend={this.props.list[meetingId]['text']}
-      />
-    })}
-  </List>
-</div>*/}

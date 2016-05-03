@@ -21,18 +21,8 @@ const groups = [
 ]
 
 class MeetingEditor extends Component {
-  //TODO can be abstracted further. form state should live inside forms
-  state = {
-    error: false,
-    title: '',
-    address: '',
-    text: '',
-    agenda: '',
-    // gid: '',
-    // groupName: '',
-    value: 0,
-    notification: false,
-    forms: [
+
+  static initialFormsState = [
     {
       schema: Joi.object().keys({
         title: Joi.string().min(3).required().label('Title'),
@@ -53,7 +43,20 @@ class MeetingEditor extends Component {
       data: {},
       nextIcon: 'done'
     }
-  ],
+  ];
+
+  //TODO can be abstracted further. form state should live inside forms
+  state = {
+    error: false,
+    title: '',
+    address: '',
+    text: '',
+    agenda: '',
+    // gid: '',
+    // groupName: '',
+    value: 0,
+    notification: false,
+    forms: MeetingEditor.initialFormsState,
     current: 0
   };
 
@@ -61,15 +64,12 @@ class MeetingEditor extends Component {
     this.setState({...this.state, [name]: value});
   };
 
-  render() {
+  resetForm = _ => this.setState({
+    forms: MeetingEditor.initialFormsState
+  });
 
-    const getStyles = () => {
-      return {
-        val: {
-          x: spring(0, preset),
-        }
-      }
-    };
+  render() {
+    console.log('INITIAL_FORM', MeetingEditor.initialFormsState);
 
     const setFormData = (b) => {
       this.setState(
@@ -84,7 +84,9 @@ class MeetingEditor extends Component {
         this.state.forms.reduce((acc, form) => {
           return {...form.data, ...acc}
         }, ({}))
-      )
+      );
+
+      this.resetForm();
     };
 
     const formValid = !isEmpty(this.state.forms[this.state.current].data);
@@ -128,11 +130,11 @@ class MeetingEditor extends Component {
           onFormValid={(formData) => {
             setFormData(formData)
           }}
-          onFormInvalid={(errors) => {
+          onFormInvalid={_ => {
             setFormData({})
           }}
           >
-          <Input key="title" type='text' label='Title' value={this.state.title} />
+          <Input key="title" type='text' label='Title' maxLength={32} value={this.state.title} />
           <Input key="address" type='text' label='Address' value={this.state.address} />
           <DatePicker key='date' value={this.state.date} placeholder="Dato"  label="Date" minDate={new Date()} />
           <TimePicker key='startTime' value={this.state.startTime} placeholder="Start Tid" label="Start Time" />
